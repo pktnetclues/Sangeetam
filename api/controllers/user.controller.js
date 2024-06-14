@@ -7,6 +7,15 @@ import {
   loginSchema,
   registerSchema,
 } from "../schema/user.schema.js";
+import {
+  forgetPassMailContent,
+  registerEmailtoAdmin,
+  registerEmailtoUser,
+  sendEmail,
+} from "../utils/mail.js";
+
+import crypto from "crypto";
+import forgetPassToken from "../models/auth/token.model.js";
 
 const register = async (req, res) => {
   try {
@@ -15,8 +24,6 @@ const register = async (req, res) => {
     const { name, email, password } = req.body;
 
     const existingUser = await User.findOne({ where: { email: email } });
-
-    console.log(existingUser);
 
     if (existingUser && existingUser.email) {
       return res.status(400).json({ message: "user already exist" });
@@ -30,7 +37,28 @@ const register = async (req, res) => {
       password: hashedPassword,
     });
 
-    return res.status(200).json({ message: "success", userid: user.id });
+    if (user) {
+      // await sendEmail({
+      //   email: email,
+      //   subject: "Approval: new user registration",
+      //   mailgenContent: registerEmailtoAdmin({
+      //     name: name,
+      //     email: email,
+      //     dashboardLink: `http://localhost:5173/admin/dashboard`,
+      //   }),
+      // });
+
+      await sendEmail({
+        email: email,
+        subject: "Registration Success",
+        mailgenContent: registerEmailtoUser({
+          name: name,
+          email: email,
+        }),
+      });
+    }
+
+    return res.status(200).json({ message: "success" });
   } catch (error) {
     if (error instanceof Yup.ValidationError) {
       return res.status(400).json({ errors: error.message });
@@ -121,7 +149,27 @@ const sendForgetPassMail = async (req, res) => {
       return res.status(400).json({ message: "Invalid Email" });
     }
 
-    return res.status(200).json({ existingUser: existingUser });
+    const token = crypto.randomInt(10000, 999999);
+
+    const saveTokenInDB = await forgetPassToken.create({
+      email: existingUser.email,
+      token: token,
+    });
+
+    if (saveTokenInDB) {
+      await sendEmail({
+        email: existingUser.email,
+        subject: "Password Reset Request",
+        mailgenContent: forgetPassMailContent({
+          name: existingUser.name,
+          forgetPassLink: `http://localhost:5173/forgetPassLink/?email=${existingUser.email}&token=${token}`,
+        }),
+      });
+    }
+
+    return res
+      .status(200)
+      .json({ message: "Password Reset Mail Sent... Check Your Mail" });
   } catch (error) {
     if (error instanceof Yup.ValidationError) {
       return res.status(400).json({ errors: error.message });

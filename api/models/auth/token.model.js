@@ -17,4 +17,6 @@ const forgetPassToken = sequelize.define("token_password", {
   },
 });
 
+// forgetPassToken.sync();
+
 export default forgetPassToken;
