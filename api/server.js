@@ -3,6 +3,7 @@ import { configDotenv } from "dotenv";
 import express from "express";
 import userRoutes from "./routes/user.routes.js";
 import sequelize from "./utils/sequelize.js";
+import cors from "cors";
 configDotenv();
 
 const app = express();
@@ -10,6 +11,13 @@ const app = express();
 app.get("/api/health", (req, res) => {
   res.json({ message: "I am good" });
 });
+
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  }),
+);
 
 app.use(express.json());
 app.use(cookieParser());

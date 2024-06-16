@@ -14,8 +14,8 @@ sequelize
     console.log("Errror Connecting", err.original.sqlMessage);
   });
 
-// sequelize.sync({ alter: true }).then(() => {
-//   console.log("Tables created");
-// });
+sequelize.sync().then(() => {
+  console.log("Tables created");
+});
 
 export default sequelize;

@@ -1,7 +1,38 @@
+import { Suspense, lazy } from "react";
 import "./App.css";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { CircularProgress, CssBaseline } from "@mui/material";
+import { Toaster } from "sonner";
+import { ContextProvider } from "./context/Context";
+import AdminRoutes from "./components/admin/AdminRoutes";
+import UserRoutes from "./components/user/UserRoutes";
+
+const Login = lazy(() => import("./components/auth/Login"));
+const Register = lazy(() => import("./components/auth/Register"));
+const ForgetPassword = lazy(() => import("./components/auth/ForgetPassword"));
+const ChangePassword = lazy(() => import("./components/auth/ChangePassword"));
 
 function App() {
-  return <></>;
+  return (
+    <ContextProvider>
+      <Router>
+        <CssBaseline />
+        <Toaster position="top-center" />
+        <Suspense fallback={<CircularProgress />}>
+          <Routes>
+            <Route path="/" element={<Login />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgetPassword />} />
+            <Route path="/change-password" element={<ChangePassword />} />
+            <Route path="/admin/dashboard" element={<AdminRoutes />} />
+            <Route path="/user/home" element={<UserRoutes />} />
+            <Route path="/*" element={<h1>Not Found</h1>} />
+          </Routes>
+        </Suspense>
+      </Router>
+    </ContextProvider>
+  );
 }
 
 export default App;

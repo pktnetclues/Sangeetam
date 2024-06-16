@@ -42,51 +42,108 @@ const forgetPassMailContent = ({ name, forgetPassLink }) => {
   return {
     body: {
       name: name,
-      intro: "We got a request to reset the password of our account",
-      action: {
-        instructions:
-          "To reset your password click on the following button or link:",
-        button: {
-          color: "#22BC66",
-          text: "Reset password",
-          link: forgetPassLink,
+      intro: "We received a request to reset the password for your account.",
+      action: [
+        {
+          instructions:
+            "To reset your password, please click the button below. This link is valid for only 1 hour:",
+          button: {
+            color: "#22BC66",
+            text: "Reset Password",
+            link: forgetPassLink,
+            fallback: true,
+          },
         },
-      },
-      outro:
-        "Need help, or have questions? Just reply to this email, we'd love to help.",
+      ],
     },
   };
 };
 
-const registerEmailtoAdmin = ({ name, email, dashboardLink }) => {
+const registerEmailToAdmin = ({ name, email, dashboardLink }) => {
   return {
     body: {
       name: "Admin",
-      intro: "Approval: new user registration",
-      action: {
-        instructions: `New User has requested for registration`,
-        button: {
-          color: "#22BC66",
-          text: "Go To Dashboard",
-          link: dashboardLink,
+      intro: "Approval: New User Registration",
+      table: {
+        data: [
+          {
+            Name: name,
+            Email: email,
+          },
+        ],
+        columns: {
+          // Optionally, customize the column widths
+          customWidth: {
+            Name: "20%",
+            Email: "80%",
+          },
+          // Optionally, change column alignment
+          customAlignment: {
+            Name: "left",
+            Email: "left",
+          },
         },
       },
+      action: [
+        {
+          instructions: "A new user has requested registration.",
+          button: {
+            color: "#22BC66",
+            text: "Go to Dashboard",
+            link: dashboardLink,
+            fallback: true,
+          },
+        },
+      ],
       outro:
-        "Need help, or have questions? Just reply to this email, we'd love to help.",
+        "Need help or have questions? Just reply to this email, and we'd be happy to assist you.",
     },
   };
 };
 
-const registerEmailtoUser = ({ name, email }) => {
+const registerEmailToUser = ({ name }) => {
   return {
     body: {
       name: name,
-      intro: "Thankyou for creating account",
-      action: {
-        instructions: `Your account is sent for approval to admin plase wait you will get new mail once its get approved by admin`,
-      },
+      intro: "Thank you for creating an account.",
+      action: [
+        {
+          instructions:
+            "Your account has been sent for approval. Please wait for further instructions. You will receive a new email once it is approved by the admin.",
+          button: [
+            {
+              text: "Visit our website",
+              link: "https://example.com",
+              fallback: true,
+            },
+          ],
+        },
+      ],
       outro:
-        "Need help, or have questions? Just reply to this email, we'd love to help.",
+        "Need help or have questions? Just reply to this email, and we'd be happy to assist you.",
+    },
+  };
+};
+
+const accountApprovedEmailToUser = ({ name, loginLink }) => {
+  return {
+    body: {
+      name: name,
+      intro: "Congratulations! Your account has been approved.",
+      action: [
+        {
+          instructions:
+            "You can now log in to your account using the link below:",
+          button: {
+            color: "#22BC66",
+            text: "Log In to Your Account",
+            link: loginLink,
+            fallback: true,
+          },
+        },
+      ],
+      outro:
+        "Need help or have questions? Just reply to this email, and we'd be happy to assist you.",
     },
   };
 };
@@ -94,33 +151,7 @@ const registerEmailtoUser = ({ name, email }) => {
 export {
   sendEmail,
   forgetPassMailContent,
-  registerEmailtoAdmin,
-  registerEmailtoUser,
+  registerEmailToAdmin,
+  registerEmailToUser,
+  accountApprovedEmailToUser,
 };
-
-// const mailer = async (email, otp, callback) => {
-//   const transporter = nodemailer.createTransport({
-//     service: "gmail",
-//     auth: {
-//       user: process.env.GMAIL_ID,
-//       pass: process.env.GMAIL_PASSWORD,
-//     },
-//   });
-
-//   const mailOptions = {
-//     from: process.env.GMAIL_ID,
-//     to: email,
-//     subject: `OTP Verification for Facegram`,
-//     html: emailContent,
-//   };
-
-//   transporter.sendMail(mailOptions, (error) => {
-//     if (error) {
-//       console.error("Error sending email:", error);
-//       callback(error);
-//     } else {
-//       console.log("Email sent");
-//       callback(null);
-//     }
-//   });
-// };
