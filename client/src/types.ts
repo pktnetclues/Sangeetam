@@ -5,7 +5,7 @@ interface UserType {
   isApproved: boolean;
   isAdmin: boolean;
   isDeleted: boolean;
-  status: string;
+  status: boolean;
 }
 
 export type { UserType };

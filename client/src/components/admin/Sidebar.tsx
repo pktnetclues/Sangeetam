@@ -9,6 +9,8 @@ import {
   Box,
   useTheme,
   useMediaQuery,
+  Typography,
+  Divider,
 } from "@mui/material";
 
 import { useNavigate, useLocation } from "react-router-dom";
@@ -24,7 +26,7 @@ const Sidebar = () => {
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
 
   const menuItems = [
-    { label: "Users", icon: <GroupIcon />, path: "/admin/users" },
+    { label: "All Users", icon: <GroupIcon />, path: "/admin/users" },
     {
       label: "Pending Users",
       icon: <HowToRegIcon />,
@@ -53,7 +55,20 @@ const Sidebar = () => {
       }}
     >
       <Box sx={{ overflow: "auto" }}>
-        <List>
+        <Typography
+          sx={{
+            textAlign: "center",
+            padding: "10px",
+          }}
+        >
+          Sangeetam
+        </Typography>
+        <Divider />
+        <List
+          sx={{
+            mt: "10px",
+          }}
+        >
           {menuItems.map((item) => (
             <ListItem key={item.label} disablePadding>
               <ListItemButton

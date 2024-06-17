@@ -9,6 +9,9 @@ import {
   updatePassSchema,
 } from "../schema/user.schema.js";
 import {
+  accountApprovedEmailToUser,
+  accountDeletedEmailToUser,
+  accountRejectedEmailToUser,
   forgetPassMailContent,
   registerEmailToAdmin,
   registerEmailToUser,
@@ -44,7 +47,7 @@ const register = async (req, res) => {
       const adminEmailContent = registerEmailToAdmin({
         name,
         email,
-        dashboardLink: `http://localhost:5173/admin/dashboard`,
+        dashboardLink: `http://localhost:5173/admin/pending-users`,
       });
       await sendEmail({
         email: process.env.GMAIL_ID,
@@ -62,6 +65,65 @@ const register = async (req, res) => {
     }
 
     return res.status(200).json({ message: "Registration successful" });
+  } catch (error) {
+    if (error instanceof Yup.ValidationError) {
+      return res.status(400).json({ message: error.errors });
+    }
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+/*
+  Approve User
+*/
+const approveUser = async (req, res) => {
+  try {
+    const { isAdmin } = req.user;
+
+    if (!isAdmin) {
+      return res.status(400).json({ message: "You are not authorized" });
+    }
+
+    const { name, email, action } = req.body;
+    console.log(action);
+
+    if (action === "reject") {
+      const response = await User.destroy({
+        where: { email },
+      });
+
+      if (response === 1) {
+        const userEmailContent = accountRejectedEmailToUser({
+          name,
+          email,
+        });
+        await sendEmail({
+          email: email,
+          subject: "Sorry: Account registeration rejected",
+          mailgenContent: userEmailContent,
+        });
+
+        return res.status(200).json({ message: "User Rejected Successfully" });
+      }
+    }
+
+    const approved = await User.update(
+      { isApproved: true },
+      { where: { email } }
+    );
+
+    if (approved[0] === 1) {
+      const userEmailContent = accountApprovedEmailToUser({
+        name,
+      });
+      await sendEmail({
+        email: email,
+        subject: "Congratulations: Account registeration approved",
+        mailgenContent: userEmailContent,
+      });
+    }
+
+    return res.status(200).json({ message: "User Approved successfully" });
   } catch (error) {
     if (error instanceof Yup.ValidationError) {
       return res.status(400).json({ message: error.errors });
@@ -116,7 +178,7 @@ const login = async (req, res) => {
     } else {
       const generateJwtToken = jwt.sign(
         {
-          userid: existingUser.userId,
+          userId: existingUser.userId,
           email: existingUser.email,
           name: existingUser.name,
           isAdmin: existingUser.isAdmin,
@@ -304,9 +366,12 @@ const getAllUsers = async (req, res) => {
       ],
       where: {
         isApproved: true,
+        isAdmin: false,
+        isDeleted: false,
       },
+      order: [["createdAt", "DESC"]],
     });
-    return res.status(200).json({ users });
+    return res.status(200).json(users);
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -321,6 +386,16 @@ const getPendingUsers = async (req, res) => {
     }
 
     const users = await User.findAll({
+      attributes: [
+        "userId",
+        "name",
+        "email",
+        "isAdmin",
+        "isApproved",
+        "isDeleted",
+        "status",
+        "createdAt",
+      ],
       where: {
         isApproved: false,
       },
@@ -331,12 +406,75 @@ const getPendingUsers = async (req, res) => {
   }
 };
 
+const changeUserStatus = async (req, res) => {
+  try {
+    await emailSchema.validate(req.body, { abortEarly: false });
+
+    const { isAdmin } = req.user;
+
+    if (!isAdmin) {
+      return res.status(400).json({ message: "You are not authorized" });
+    }
+    const { email } = req.body;
+
+    const existingStatus = await User.findOne({
+      attributes: ["status"],
+      where: { email },
+    });
+
+    if (existingStatus.status) {
+      await User.update({ status: false }, { where: { email } });
+      return res.status(200).json({ message: "User is de-activated" });
+    } else {
+      await User.update({ status: true }, { where: { email } });
+      return res.status(200).json({ message: "User is activated" });
+    }
+  } catch (error) {
+    if (error instanceof Yup.ValidationError) {
+      return res.status(400).json({ message: error.errors });
+    }
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const deleteUser = async (req, res) => {
+  try {
+    const { name, email } = req.body;
+    const { isAdmin } = req.user;
+
+    if (!isAdmin) {
+      return res.status(200).json({ message: "You are not authorized" });
+    }
+
+    const response = await User.update(
+      { isDeleted: true },
+      { where: { email } }
+    );
+
+    if (response[0] === 1) {
+      const userEmailContent = accountDeletedEmailToUser({
+        name,
+        email,
+      });
+      await sendEmail({
+        email: email,
+        subject: "Notice: Your account deleted",
+        mailgenContent: userEmailContent,
+      });
+      return res.status(200).json({ message: "User Deleted Successfully" });
+    }
+  } catch (error) {}
+};
+
 export {
+  approveUser,
+  getAllUsers,
+  getPendingUsers,
   login,
   register,
   sendForgetPassMail,
-  verifyForgetPassToken,
   updatePassword,
-  getAllUsers,
-  getPendingUsers,
+  verifyForgetPassToken,
+  changeUserStatus,
+  deleteUser,
 };

@@ -21,7 +21,7 @@ function App() {
     <ContextProvider>
       <Router>
         <CssBaseline />
-        <Toaster position="top-center" />
+        <Toaster position="top-center" duration={2000} />
         <Suspense fallback={<CircularProgress />}>
           <Routes>
             <Route path="/" element={<Login />} />

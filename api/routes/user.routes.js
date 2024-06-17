@@ -1,5 +1,8 @@
 import express from "express";
 import {
+  approveUser,
+  changeUserStatus,
+  deleteUser,
   getAllUsers,
   getPendingUsers,
   login,
@@ -14,6 +17,9 @@ const userRoutes = express.Router();
 
 // register
 userRoutes.route("/register").post(register);
+
+//approve user
+userRoutes.route("/approve-user").post(authMiddleware, approveUser);
 
 // login
 userRoutes.route("/login").post(login);
@@ -38,5 +44,9 @@ userRoutes.route("/all-users").get(authMiddleware, getAllUsers);
 
 // get all pending users
 userRoutes.route("/pending-users").get(authMiddleware, getPendingUsers);
+
+userRoutes.route("/change-user-status").post(authMiddleware, changeUserStatus);
+
+userRoutes.route("/delete-user").post(authMiddleware, deleteUser);
 
 export default userRoutes;

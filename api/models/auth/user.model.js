@@ -24,8 +24,8 @@ User.init(
       allowNull: false,
     },
     status: {
-      type: DataTypes.ENUM("active", "inactive"),
-      defaultValue: "active",
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
     },
     isDeleted: {
       type: DataTypes.BOOLEAN,
@@ -47,6 +47,6 @@ User.init(
   }
 );
 
-// User.sync();
+// User.sync({ force: true });
 
 export default User;

@@ -21,4 +21,16 @@ const emailSchema = Yup.object().shape({
   email: Yup.string().email("invalid email").required("email is required"),
 });
 
-export { registerSchema, loginSchema, emailSchema, updatePassSchema };
+const audioSchema = Yup.object().shape({
+  album: Yup.string().min(5).required("album name is required"),
+  singerName: Yup.string().min(2).required("singer name is required"),
+  writerName: Yup.string().min(2).required("writer name is required"),
+});
+
+export {
+  registerSchema,
+  loginSchema,
+  emailSchema,
+  updatePassSchema,
+  audioSchema,
+};

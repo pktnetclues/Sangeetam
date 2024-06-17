@@ -38,6 +38,25 @@ const sendEmail = async (options) => {
   }
 };
 
+const passChangeMailToUser = ({ name, email }) => {
+  return {
+    body: {
+      name: name,
+      intro: "Password Changed Successfully",
+      action: [
+        {
+          instructions: `Hello ${name}, password for account ${email} has been changed successfully`,
+          button: {
+            color: "#22BC66",
+            text: "Login",
+            link: "http://localhost:5173/login",
+            fallback: true,
+          },
+        },
+      ],
+    },
+  };
+};
 const forgetPassMailContent = ({ name, forgetPassLink }) => {
   return {
     body: {
@@ -125,7 +144,52 @@ const registerEmailToUser = ({ name }) => {
   };
 };
 
-const accountApprovedEmailToUser = ({ name, loginLink }) => {
+const accountRejectedEmailToUser = ({ name }) => {
+  return {
+    body: {
+      name: name,
+      intro: "Unfortunatily! Your account has been Rejected.",
+      action: [
+        {
+          instructions:
+            "We are sorry to inform you your account has been rejected by admin. However you can again register",
+          button: {
+            color: "#22BC66",
+            text: "Register again",
+            link: "http://localhost:5173/register",
+            fallback: true,
+          },
+        },
+      ],
+      outro:
+        "Need help or have questions? Just reply to this email, and we'd be happy to assist you.",
+    },
+  };
+};
+
+const accountDeletedEmailToUser = ({ name, email }) => {
+  return {
+    body: {
+      name: name,
+      intro: "Notice!, Your account has been deleted by admin",
+      action: [
+        {
+          instructions: `Hello ${name}, Unfortunatily your account with ${email} has been deleted by admin. however you can request for account recovery from admin`,
+          button: {
+            color: "#22BC66",
+            text: "Go to homepage",
+            link: "http://localhost:5173",
+            fallback: true,
+          },
+        },
+      ],
+      outro:
+        "Need help or have questions? Just reply to this email, and we'd be happy to assist you.",
+    },
+  };
+};
+
+const accountApprovedEmailToUser = ({ name }) => {
   return {
     body: {
       name: name,
@@ -137,7 +201,7 @@ const accountApprovedEmailToUser = ({ name, loginLink }) => {
           button: {
             color: "#22BC66",
             text: "Log In to Your Account",
-            link: loginLink,
+            link: "http://localhost:5173/login",
             fallback: true,
           },
         },
@@ -151,7 +215,10 @@ const accountApprovedEmailToUser = ({ name, loginLink }) => {
 export {
   sendEmail,
   forgetPassMailContent,
+  passChangeMailToUser,
   registerEmailToAdmin,
   registerEmailToUser,
   accountApprovedEmailToUser,
+  accountRejectedEmailToUser,
+  accountDeletedEmailToUser,
 };

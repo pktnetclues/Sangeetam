@@ -4,6 +4,7 @@ import express from "express";
 import userRoutes from "./routes/user.routes.js";
 import sequelize from "./utils/sequelize.js";
 import cors from "cors";
+import audioRoutes from "./routes/audio.routes.js";
 configDotenv();
 
 const app = express();
@@ -20,8 +21,9 @@ app.use(
 );
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use("/api", userRoutes);
+app.use("/api", userRoutes, audioRoutes);
 
 sequelize;
 

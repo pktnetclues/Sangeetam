@@ -19,7 +19,7 @@ const authMiddleware = async (req, res, next) => {
     }
 
     // Check if the user exists
-    const user = await User.findOne({ where: { userId: decoded.userid } });
+    const user = await User.findOne({ where: { userId: decoded.userId } });
     if (!user) {
       return res.status(401).json({ message: "User not found" });
     }
