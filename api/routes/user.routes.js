@@ -19,10 +19,8 @@ userRoutes.route("/register").post(register);
 userRoutes.route("/login").post(login);
 
 //profile
-
 userRoutes.route("/profile").get(authMiddleware, (req, res) => {
   const user = req.user;
-  console.log("user", user);
   res.status(200).json(user);
 });
 
@@ -36,9 +34,9 @@ userRoutes.route("/verify-reset-password").get(verifyForgetPassToken);
 userRoutes.route("/change-password").post(updatePassword);
 
 // get all users
-userRoutes.route("/all-users").get(getAllUsers);
+userRoutes.route("/all-users").get(authMiddleware, getAllUsers);
 
 // get all pending users
-userRoutes.route("/pending-users").get(getPendingUsers);
+userRoutes.route("/pending-users").get(authMiddleware, getPendingUsers);
 
 export default userRoutes;

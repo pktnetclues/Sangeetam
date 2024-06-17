@@ -7,8 +7,6 @@ const authMiddleware = async (req, res, next) => {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
-  console.log("token", token);
-
   // Verify the token
   jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
     if (err) {

@@ -44,12 +44,14 @@ const ChangePasswordAfterForgot: React.FC = () => {
 
   const query = new URLSearchParams(location.search);
   const email = query.get("email");
+  const token = query.get("token");
 
   const [loading, setLoading] = useState(false);
 
   const handleFormSubmit: SubmitHandler<IFormInput> = async (data) => {
     const userData = {
       email: email,
+      token: token,
       password: data.newPassword,
     };
 
@@ -88,7 +90,8 @@ const ChangePasswordAfterForgot: React.FC = () => {
         justifyContent: "center",
         alignItems: "center",
       }}
-      maxWidth="xs">
+      maxWidth="xs"
+    >
       <Box
         sx={{
           backgroundColor: "#f5f5f5",
@@ -99,17 +102,20 @@ const ChangePasswordAfterForgot: React.FC = () => {
           flexDirection: "column",
           alignItems: "center",
           width: "100%",
-        }}>
+        }}
+      >
         <Typography
           variant="h4"
           gutterBottom
-          sx={{ fontWeight: 700, color: "#333" }}>
+          sx={{ fontWeight: 700, color: "#333" }}
+        >
           Change Password
         </Typography>
         <form
           name="form"
           onSubmit={handleSubmit(handleFormSubmit)}
-          style={{ width: "100%" }}>
+          style={{ width: "100%" }}
+        >
           <TextField
             id="newPassword"
             label="New Password"
@@ -149,7 +155,8 @@ const ChangePasswordAfterForgot: React.FC = () => {
                 "&:hover": {
                   backgroundColor: "#555",
                 },
-              }}>
+              }}
+            >
               Change Password
             </Button>
           ) : (
@@ -163,7 +170,8 @@ const ChangePasswordAfterForgot: React.FC = () => {
                 backgroundColor: "#888",
                 color: "#fff",
                 fontWeight: 600,
-              }}>
+              }}
+            >
               Changing...
             </Button>
           )}

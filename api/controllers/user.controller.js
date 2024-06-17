@@ -6,6 +6,7 @@ import {
   emailSchema,
   loginSchema,
   registerSchema,
+  updatePassSchema,
 } from "../schema/user.schema.js";
 import {
   forgetPassMailContent,
@@ -22,21 +23,17 @@ import forgetPassToken from "../models/auth/token.model.js";
 */
 const register = async (req, res) => {
   try {
-    // Validate request body
     await registerSchema.validate(req.body, { abortEarly: false });
 
     const { name, email, password } = req.body;
 
-    // Check if user already exists
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create new user
     const user = await User.create({
       name,
       email,
@@ -44,14 +41,13 @@ const register = async (req, res) => {
     });
 
     if (user) {
-      // Send email to admin
       const adminEmailContent = registerEmailToAdmin({
         name,
         email,
         dashboardLink: `http://localhost:5173/admin/dashboard`,
       });
       await sendEmail({
-        email: "admin@example.com", // Assuming you have a fixed admin email
+        email: process.env.GMAIL_ID,
         subject: "Approval: New User Registration",
         mailgenContent: adminEmailContent,
       });
@@ -112,7 +108,7 @@ const login = async (req, res) => {
 
     const comparePassword = await bcrypt.compare(
       password,
-      existingUser.password,
+      existingUser.password
     );
 
     if (!comparePassword) {
@@ -131,7 +127,7 @@ const login = async (req, res) => {
         process.env.JWT_SECRET,
         {
           expiresIn: "1d",
-        },
+        }
       );
 
       return res
@@ -201,12 +197,10 @@ const verifyForgetPassToken = async (req, res) => {
   try {
     const { email, token } = req.query;
 
-    // Check if both email and token are provided
     if (!email || !token) {
       return res.status(400).json({ message: "Email and token are required" });
     }
 
-    // Find the token in the database
     const savedToken = await forgetPassToken.findOne({
       where: {
         email: email,
@@ -216,29 +210,21 @@ const verifyForgetPassToken = async (req, res) => {
 
     if (!savedToken) {
       return res.redirect(
-        `http://localhost:5173/forgot-password?message=Invalid or expired token please try again`,
+        `http://localhost:5173/forgot-password?message=Invalid or expired token please try again`
       );
     }
 
-    // Check if the token is expired
     const tokenCreatedAt = new Date(savedToken.createdAt).getTime();
     const tokenExpirationTime = 60 * 60 * 1000;
     if (Date.now() - tokenCreatedAt > tokenExpirationTime) {
       return res.status(400).json({ message: "Token has expired" });
     }
 
-    // Invalidate the token by deleting it
-    await forgetPassToken.destroy({
-      where: {
-        email: email,
-        token: token,
-      },
-    });
-
-    // Token is valid
     return res
       .status(200)
-      .redirect(`http://localhost:5173/change-password?email=${email}`);
+      .redirect(
+        `http://localhost:5173/change-password?email=${email}&token=${token}`
+      );
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -249,22 +235,43 @@ const verifyForgetPassToken = async (req, res) => {
 */
 const updatePassword = async (req, res) => {
   try {
-    // Validate request body
-    await loginSchema.validate(req.body, { abortEarly: false });
+    await updatePassSchema.validate(req.body, { abortEarly: false });
 
-    const { email, password } = req.body;
+    const { email, token, password } = req.body;
 
-    // Hash the new password
+    const savedToken = await forgetPassToken.findOne({
+      where: {
+        email: email,
+        token: token,
+      },
+    });
+
+    if (!savedToken) {
+      res.status(400).json({ message: "Token expired please try again" });
+    }
+
+    const tokenCreatedAt = new Date(savedToken.createdAt).getTime();
+    const tokenExpirationTime = 60 * 60 * 1000;
+    if (Date.now() - tokenCreatedAt > tokenExpirationTime) {
+      return res.status(400).json({ message: "Token has expired" });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Update the user's password in the database
     const updateUser = await User.update(
       { password: hashedPassword },
-      { where: { email: email } },
+      { where: { email: email } }
     );
 
     if (updateUser[0] === 1) {
-      // Check if exactly one row was updated
+      // Invalidate the token by deleting it
+      await forgetPassToken.destroy({
+        where: {
+          email: email,
+          token: token,
+        },
+      });
+
       return res.status(200).json({ message: "Password updated successfully" });
     } else {
       return res.status(500).json({ message: "Failed to update password" });
@@ -279,7 +286,22 @@ const updatePassword = async (req, res) => {
 
 const getAllUsers = async (req, res) => {
   try {
+    const { isAdmin } = req.user;
+
+    if (!isAdmin) {
+      return res.status(401).json({ message: "You are not authorized" });
+    }
     const users = await User.findAll({
+      attributes: [
+        "userId",
+        "name",
+        "email",
+        "isAdmin",
+        "isApproved",
+        "isDeleted",
+        "status",
+        "createdAt",
+      ],
       where: {
         isApproved: true,
       },
@@ -292,12 +314,18 @@ const getAllUsers = async (req, res) => {
 
 const getPendingUsers = async (req, res) => {
   try {
+    const { isAdmin } = req.user;
+
+    if (!isAdmin) {
+      return res.status(401).json({ message: "You are not authorized" });
+    }
+
     const users = await User.findAll({
       where: {
         isApproved: false,
       },
     });
-    return res.status(200).json({ users });
+    return res.status(200).json(users);
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }

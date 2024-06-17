@@ -56,7 +56,7 @@ const Login: React.FC = () => {
         console.log(response.data);
 
         if (response.data.isAdmin) {
-          navigate("/admin/dashboard");
+          navigate("/admin/users");
         } else {
           navigate("/user/home");
         }
@@ -87,7 +87,8 @@ const Login: React.FC = () => {
         alignItems: "center",
         flexDirection: "column",
       }}
-      maxWidth="xs">
+      maxWidth="xs"
+    >
       <Box
         sx={{
           backgroundColor: "#f5f5f5",
@@ -98,17 +99,20 @@ const Login: React.FC = () => {
           flexDirection: "column",
           alignItems: "center",
           width: "100%",
-        }}>
+        }}
+      >
         <Typography
           variant="h4"
           gutterBottom
-          sx={{ fontWeight: 700, color: "#333" }}>
+          sx={{ fontWeight: 700, color: "#333" }}
+        >
           Login
         </Typography>
         <form
           name="form"
           onSubmit={handleSubmit(handleFormSubmit)}
-          style={{ width: "100%" }}>
+          style={{ width: "100%" }}
+        >
           <TextField
             id="email"
             label="Email"
@@ -134,7 +138,8 @@ const Login: React.FC = () => {
           />
           <Typography
             variant="body2"
-            sx={{ marginBottom: "10px", color: "#666", fontWeight: 500 }}>
+            sx={{ marginBottom: "10px", color: "#666", fontWeight: 500 }}
+          >
             Forgot your password?{" "}
             <Link to="/forgot-password" style={{ color: "#333" }}>
               Click here
@@ -154,7 +159,8 @@ const Login: React.FC = () => {
                 "&:hover": {
                   backgroundColor: "#555",
                 },
-              }}>
+              }}
+            >
               Login
             </Button>
           ) : (
@@ -168,13 +174,15 @@ const Login: React.FC = () => {
                 backgroundColor: "#888",
                 color: "#fff",
                 fontWeight: 600,
-              }}>
+              }}
+            >
               Logging in...
             </Button>
           )}
           <Typography
             variant="body2"
-            sx={{ marginTop: "16px", color: "#666", fontWeight: 500 }}>
+            sx={{ marginTop: "16px", color: "#666", fontWeight: 500 }}
+          >
             Don't have an account?{" "}
             <Link to="/register" style={{ color: "#333" }}>
               Register
