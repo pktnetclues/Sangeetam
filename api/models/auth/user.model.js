@@ -44,7 +44,7 @@ User.init(
     sequelize,
     modelName: "user",
     tableName: "user",
-  }
+  },
 );
 
 // User.sync({ force: true });

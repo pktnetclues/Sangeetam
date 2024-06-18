@@ -1,31 +1,24 @@
 import sequelize from "../../utils/sequelize.js";
 import { DataTypes, Model } from "sequelize";
 import User from "../auth/user.model.js";
+import Category from "./category.model.js";
 
-class AudioModel extends Model {}
+class VideoModel extends Model {}
 
-AudioModel.init(
+VideoModel.init(
   {
-    audioId: {
+    videoId: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
       allowNull: false,
     },
-    album: {
+    title: {
       type: DataTypes.STRING(200),
       allowNull: false,
     },
-    audioUrl: {
+    videoUrl: {
       type: DataTypes.STRING(500),
-      allowNull: false,
-    },
-    singerName: {
-      type: DataTypes.STRING(200),
-      allowNull: false,
-    },
-    writerName: {
-      type: DataTypes.STRING(200),
       allowNull: false,
     },
     uploadedBy: {
@@ -48,16 +41,27 @@ AudioModel.init(
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
+    categoryId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: Category,
+        key: "categoryId",
+      },
+    },
   },
   {
     sequelize,
-    tableName: "audios",
-    modelName: "AudioModel",
+    tableName: "videos",
+    modelName: "VideoModel",
   },
 );
 
-// AudioModel.sync({ force: true }).then(() => {
-//   console.log("AudioModel created");
+VideoModel.belongsTo(User, { foreignKey: "uploadedBy" });
+VideoModel.belongsTo(Category, { foreignKey: "categoryId" });
+
+// VideoModel.sync({ force: true }).then(() => {
+//   console.log("VideoModel created");
 // });
 
-export default AudioModel;
+export default VideoModel;

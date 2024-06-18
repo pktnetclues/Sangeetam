@@ -27,10 +27,16 @@ const audioSchema = Yup.object().shape({
   writerName: Yup.string().min(2).required("writer name is required"),
 });
 
+const videoSchema = Yup.object().shape({
+  title: Yup.string().min(5).required("title is required"),
+  categoryId: Yup.number().required("category id is required"),
+});
+
 export {
   registerSchema,
   loginSchema,
   emailSchema,
   updatePassSchema,
   audioSchema,
+  videoSchema,
 };

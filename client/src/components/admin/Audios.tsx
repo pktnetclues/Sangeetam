@@ -6,16 +6,23 @@ import {
   Card,
   CardActions,
   CardContent,
+  Dialog,
+  DialogContent,
+  DialogTitle,
   Grid,
+  IconButton,
   Typography,
 } from "@mui/material";
 import { AudioType } from "../../types";
 import AudioPlayer from "react-h5-audio-player";
 import "react-h5-audio-player/lib/styles.css";
 import UploadAudio from "../common/UploadAudio";
+import CloseIcon from "@mui/icons-material/Close";
+import DeleteAudio from "./DeleteAudio";
 
 const Audios: React.FC = () => {
   const [audios, setAudios] = useState<AudioType[]>([]);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     getAudios();
@@ -34,23 +41,51 @@ const Audios: React.FC = () => {
     }
   };
 
-  const handleEdit = (audioId: number) => {
-    // Handle edit functionality
-    console.log("Edit audio with ID:", audioId);
-  };
-
-  const handleDelete = (audioId: number) => {
-    // Handle delete functionality
-    console.log("Delete audio with ID:", audioId);
+  const handleClickDialog = () => {
+    setOpen(!open);
   };
 
   return (
     <div style={{ marginLeft: 250, padding: 20 }}>
+      <Button
+        sx={{
+          my: 2,
+        }}
+        variant="outlined"
+        color="primary"
+        onClick={handleClickDialog}>
+        Upload new Audio
+      </Button>
+      <Dialog open={open} onClose={handleClickDialog} maxWidth="sm" fullWidth>
+        <DialogTitle>
+          Upload Audio
+          <IconButton
+            aria-label="close"
+            onClick={handleClickDialog}
+            sx={{
+              position: "absolute",
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[500],
+            }}>
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          <UploadAudio closeDialog={handleClickDialog} callAudios={getAudios} />
+        </DialogContent>
+      </Dialog>
       <Grid container spacing={3}>
         {audios.map((audio) => (
           <Grid item xs={12} sm={6} md={4} lg={3} key={audio.audioId}>
-            <Card elevation={3}>
-              {/* Replace with actual audio thumbnail */}
+            <Card
+              elevation={3}
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                height: "100%",
+              }}>
               <Box sx={{ height: 140 }}>
                 <img
                   style={{ width: "100%", height: "100%", objectFit: "cover" }}
@@ -70,37 +105,26 @@ const Audios: React.FC = () => {
                 </Typography>
               </CardContent>
               <CardActions
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                }}
-              >
+                sx={{ flexDirection: "column", alignItems: "stretch" }}>
                 <AudioPlayer
                   showSkipControls={false}
                   autoPlay={false}
                   src={`http://localhost:4000/assets/audios/${audio.audioUrl}`}
+                  style={{ width: "100%" }}
                 />
-
-                <Box>
-                  <Button
-                    size="small"
-                    onClick={() => handleEdit(audio.audioId)}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    size="small"
-                    onClick={() => handleDelete(audio.audioId)}
-                  >
-                    Delete
-                  </Button>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    width: "100%",
+                  }}>
+                  <DeleteAudio audioId={audio.audioId} getAudios={getAudios} />
                 </Box>
               </CardActions>
             </Card>
           </Grid>
         ))}
       </Grid>
-      <UploadAudio />
     </div>
   );
 };

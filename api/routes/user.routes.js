@@ -6,6 +6,7 @@ import {
   getAllUsers,
   getPendingUsers,
   login,
+  logout,
   register,
   sendForgetPassMail,
   updatePassword,
@@ -23,6 +24,8 @@ userRoutes.route("/approve-user").post(authMiddleware, approveUser);
 
 // login
 userRoutes.route("/login").post(login);
+
+userRoutes.route("/logout").get(logout);
 
 //profile
 userRoutes.route("/profile").get(authMiddleware, (req, res) => {

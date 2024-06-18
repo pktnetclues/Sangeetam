@@ -28,7 +28,15 @@ const validationSchema = yup.object().shape({
     }),
 });
 
-const UploadAudio = () => {
+interface UploadAudioProps {
+  closeDialog: () => void;
+  callAudios: () => void;
+}
+
+const UploadAudio: React.FC<UploadAudioProps> = ({
+  closeDialog,
+  callAudios,
+}) => {
   const [mediaFile, setMediaFile] = useState<FileList | null>(null);
   const [thumbnailFile, setThumbnailFile] = useState<FileList | null>(null);
   const [loading, setLoading] = useState(false);
@@ -66,6 +74,8 @@ const UploadAudio = () => {
       if (response.status === 200) {
         reset();
         toast.success("Audio Uploaded");
+        closeDialog();
+        callAudios();
       }
     } catch (error) {
       setLoading(false);
@@ -89,13 +99,11 @@ const UploadAudio = () => {
   return (
     <Container
       sx={{
-        height: "90vh",
         display: "flex",
         alignItems: "center",
         margin: "auto",
       }}
-      maxWidth="xs"
-    >
+      maxWidth="xs">
       <form
         name="form"
         style={{
@@ -104,12 +112,7 @@ const UploadAudio = () => {
           padding: "20px",
           boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
         }}
-        onSubmit={handleSubmit(handleFormSubmit)}
-      >
-        <Typography variant="h4" align="center" gutterBottom>
-          Upload Audio File
-        </Typography>
-
+        onSubmit={handleSubmit(handleFormSubmit)}>
         <TextField
           id="album"
           label="Album"
@@ -178,8 +181,7 @@ const UploadAudio = () => {
         <Typography
           sx={{
             mb: 2,
-          }}
-        >
+          }}>
           Upload Thumbnail Image File
         </Typography>
 

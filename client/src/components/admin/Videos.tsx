@@ -1,7 +1,87 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import {
+  Button,
+  Dialog,
+  DialogTitle,
+  IconButton,
+  DialogContent,
+  Grid,
+} from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import VideoCard from "../common/VideoCard";
+import UploadVideo from "../common/UploadVideo";
+import axios from "axios";
 
 const Videos: React.FC = () => {
-  return <div>Videos</div>;
+  const [open, setOpen] = useState(false);
+  const [videos, setVideos] = useState<any[]>([]);
+
+  useEffect(() => {
+    getVideos();
+  }, []);
+
+  const getVideos = async () => {
+    try {
+      const res = await axios.get("/api/all-videos", {
+        withCredentials: true,
+      });
+
+      if (res.status === 200) {
+        setVideos(res.data);
+      }
+    } catch (error) {
+      console.error("Error fetching videos:", error);
+    }
+  };
+
+  const handleClickDialog = () => {
+    setOpen(!open);
+  };
+
+  return (
+    <div style={{ marginLeft: 250, padding: 20 }}>
+      <Button
+        sx={{
+          my: 2,
+        }}
+        variant="outlined"
+        color="primary"
+        onClick={handleClickDialog}>
+        Upload new Video
+      </Button>
+      <Dialog open={open} onClose={handleClickDialog} maxWidth="sm" fullWidth>
+        <DialogTitle>
+          Upload Video
+          <IconButton
+            aria-label="close"
+            onClick={handleClickDialog}
+            sx={{
+              position: "absolute",
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[500],
+            }}>
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          <UploadVideo closeDialog={handleClickDialog} callVideos={getVideos} />
+        </DialogContent>
+      </Dialog>
+
+      <Grid container spacing={2}>
+        {videos.map((video) => (
+          <Grid item key={video.id} xs={12} sm={6} md={4} lg={3}>
+            <VideoCard
+              title={video.title}
+              thumbnail={`http://localhost:4000/assets/thumbnails/${video.thumbnail}`}
+              videoUrl={`http://localhost:4000/assets/videos/${video.videoUrl}`}
+            />
+          </Grid>
+        ))}
+      </Grid>
+    </div>
+  );
 };
 
 export default Videos;

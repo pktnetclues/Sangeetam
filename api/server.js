@@ -7,6 +7,7 @@ import cors from "cors";
 import audioRoutes from "./routes/audio.routes.js";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
+import videoRoutes from "./routes/video.routes.js";
 configDotenv();
 
 const app = express();
@@ -19,7 +20,7 @@ app.use(
   cors({
     origin: "http://localhost:5173",
     credentials: true,
-  })
+  }),
 );
 
 app.use(express.json());
@@ -34,7 +35,7 @@ app.use("/assets", express.static(join(__dirname, "public", "assets")));
 
 console.log(__dirname + "/public/assets");
 app.use(cookieParser());
-app.use("/api", userRoutes, audioRoutes);
+app.use("/api", userRoutes, audioRoutes, videoRoutes);
 
 sequelize;
 

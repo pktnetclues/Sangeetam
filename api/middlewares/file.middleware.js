@@ -39,38 +39,49 @@ const storage = multer.diskStorage({
   },
 });
 
-// Function to check file types
 function checkFileType(file, cb) {
   // Define allowed file types
   const allowedTypes = {
-    "image/jpeg": "jpg",
-    "image/jpg": "jpg",
-    "image/png": "png",
-    "audio/mp3": "mp3",
-    "audio/mpeg": "mp3",
-    "video/mp4": "mp4",
+    "image/jpeg": ["jpg", "jpeg"],
+    "image/jpg": ["jpg"],
+    "image/png": ["png"],
+    "audio/mp3": ["mp3"],
+    "audio/mpeg": ["mp3"],
+    "video/mp4": ["mp4"],
   };
 
-  console.log(file.mimetype);
+  // Get the file extension and remove the leading dot
+  const extname = path.extname(file.originalname).toLowerCase().slice(1);
+
+  // Log file MIME type and extension for debugging
+  console.log(`MIME type: ${file.mimetype}`);
+  console.log(`File extension: ${extname}`);
 
   // Check if file's MIME type is in the allowed types
-  if (Object.keys(allowedTypes).includes(file.mimetype)) {
-    // Check file extension against expected extension for the MIME type
-    const extname = path.extname(file.originalname).toLowerCase();
-    if (extname.includes(allowedTypes[file.mimetype])) {
+  if (allowedTypes[file.mimetype]) {
+    // Check file extension against expected extensions for the MIME type
+    if (allowedTypes[file.mimetype].includes(extname)) {
       cb(null, true); // File type is allowed
     } else {
-      cb(`Error: Invalid file extension for ${file.fieldname}`);
+      cb(
+        new Error(
+          `Error: Invalid file extension for ${
+            file.fieldname
+          }. Expected ${allowedTypes[file.mimetype].join(
+            " or ",
+          )}, but got ${extname}.`,
+        ),
+      );
     }
   } else {
-    cb(`Error: Unsupported file type for ${file.fieldname}`);
+    cb(new Error(`Error: Unsupported file type for ${file.fieldname}`));
   }
 }
 
 // Configure multer middleware
 const fileMiddleware = multer({
   storage: storage,
-  limits: { fileSize: 100000000 },
+  limits: { fileSize: 1000000000 },
   fileFilter: function (req, file, cb) {
     checkFileType(file, cb);
   },
