@@ -32,7 +32,17 @@ const errMess = {
 const validationSchema = yup.object().shape({
   name: yup.string().required(errMess.message),
   email: yup.string().required(errMess.message).email("Email is Invalid"),
-  password: yup.string().min(6).required(errMess.message),
+  password: yup
+    .string()
+    .min(6)
+    .required(errMess.message)
+    .matches(RegExp("(.*[a-z].*)"), "At least one lowercase")
+    .matches(RegExp("(.*[A-Z].*)"), "At lest one Uppercase")
+    .matches(RegExp("(.*\\d.*)"), "At least one Number")
+    .matches(
+      RegExp('[!@#$%^&*(),.?":{}|<>]'),
+      "One special character is required"
+    ),
 });
 
 const Register: React.FC = () => {
@@ -93,7 +103,8 @@ const Register: React.FC = () => {
         justifyContent: "center",
         alignItems: "center",
       }}
-      maxWidth="xs">
+      maxWidth="xs"
+    >
       <Box
         sx={{
           backgroundColor: "#f5f5f5",
@@ -104,17 +115,20 @@ const Register: React.FC = () => {
           flexDirection: "column",
           alignItems: "center",
           width: "100%",
-        }}>
+        }}
+      >
         <Typography
           variant="h4"
           gutterBottom
-          sx={{ fontWeight: 700, color: "#333" }}>
+          sx={{ fontWeight: 700, color: "#333" }}
+        >
           Register
         </Typography>
         <form
           name="form"
           onSubmit={handleSubmit(handleFormSubmit)}
-          style={{ width: "100%" }}>
+          style={{ width: "100%" }}
+        >
           <TextField
             id="name"
             label="Name"
@@ -164,7 +178,8 @@ const Register: React.FC = () => {
                 "&:hover": {
                   backgroundColor: "#555",
                 },
-              }}>
+              }}
+            >
               Register
             </Button>
           ) : (
@@ -178,13 +193,15 @@ const Register: React.FC = () => {
                 backgroundColor: "#888",
                 color: "#fff",
                 fontWeight: 600,
-              }}>
+              }}
+            >
               Registering...
             </Button>
           )}
           <Typography
             variant="body2"
-            sx={{ marginTop: "16px", color: "#666", fontWeight: 500 }}>
+            sx={{ marginTop: "16px", color: "#666", fontWeight: 500 }}
+          >
             Already have an account?{" "}
             <Link to="/login" style={{ color: "#333" }}>
               Login

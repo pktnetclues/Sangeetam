@@ -1,5 +1,5 @@
 interface UserType {
-  userId: string;
+  userId: number;
   name: string;
   email: string;
   isApproved: boolean;
@@ -7,5 +7,15 @@ interface UserType {
   isDeleted: boolean;
   status: boolean;
 }
+interface AudioType {
+  audioId: number;
+  album: string;
+  singerName: string;
+  writerName: string;
+  thumbnail: string;
+  audioUrl: string;
+  isApproved: boolean;
+  createdAt: string;
+}
 
-export type { UserType };
+export type { UserType, AudioType };

@@ -5,6 +5,8 @@ import userRoutes from "./routes/user.routes.js";
 import sequelize from "./utils/sequelize.js";
 import cors from "cors";
 import audioRoutes from "./routes/audio.routes.js";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
 configDotenv();
 
 const app = express();
@@ -22,6 +24,15 @@ app.use(
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Get the directory name of the current module file
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Serve static assets from the '/public/assets' directory
+app.use("/assets", express.static(join(__dirname, "public", "assets")));
+
+console.log(__dirname + "/public/assets");
 app.use(cookieParser());
 app.use("/api", userRoutes, audioRoutes);
 

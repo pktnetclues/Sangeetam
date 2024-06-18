@@ -10,20 +10,17 @@ function ensureFolderExists(folderPath) {
   }
 }
 
-// Function to determine destination folder dynamically based on the field name
+// Function to determine destination folder dynamically based on file type
 function getDestination(req, file, cb) {
-  console.log("fielanmef", file.fieldName);
-  const fieldName = file.fieldName;
+  let folderName = "others"; // Default folder name
 
-  let folderName = "";
-  if (fieldName === "mp3") {
-    folderName = "audios";
-  } else if (fieldName === "image/jpeg") {
+  // Determine folder name based on file's MIME type
+  if (file.mimetype.startsWith("image")) {
     folderName = "thumbnails";
-  } else if (fieldName === "mp4") {
+  } else if (file.mimetype.startsWith("audio")) {
+    folderName = "audios";
+  } else if (file.mimetype.startsWith("video")) {
     folderName = "videos";
-  } else {
-    fieldName = "others";
   }
 
   const destination = `./public/assets/${folderName}/`;
@@ -31,7 +28,7 @@ function getDestination(req, file, cb) {
   cb(null, destination);
 }
 
-// Set storage
+// Set up multer storage configuration
 const storage = multer.diskStorage({
   destination: getDestination,
   filename: function (req, file, cb) {
@@ -42,28 +39,44 @@ const storage = multer.diskStorage({
   },
 });
 
-// Check file type
+// Function to check file types
 function checkFileType(file, cb) {
-  // Allowed filetypes
-  const filetypes = /mp4|mp3|jpeg|jpg|png/;
-  // Check the extension
-  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-  // Check the MIME type
-  const mimetype = filetypes.test(file.mimetype);
+  // Define allowed file types
+  const allowedTypes = {
+    "image/jpeg": "jpg",
+    "image/jpg": "jpg",
+    "image/png": "png",
+    "audio/mp3": "mp3",
+    "audio/mpeg": "mp3",
+    "video/mp4": "mp4",
+  };
 
-  if (mimetype && extname) {
-    return cb(null, true);
+  console.log(file.mimetype);
+
+  // Check if file's MIME type is in the allowed types
+  if (Object.keys(allowedTypes).includes(file.mimetype)) {
+    // Check file extension against expected extension for the MIME type
+    const extname = path.extname(file.originalname).toLowerCase();
+    if (extname.includes(allowedTypes[file.mimetype])) {
+      cb(null, true); // File type is allowed
+    } else {
+      cb(`Error: Invalid file extension for ${file.fieldname}`);
+    }
   } else {
-    cb("Only ");
+    cb(`Error: Unsupported file type for ${file.fieldname}`);
   }
 }
 
+// Configure multer middleware
 const fileMiddleware = multer({
   storage: storage,
-  limits: { fileSize: 10000000 },
+  limits: { fileSize: 100000000 },
   fileFilter: function (req, file, cb) {
     checkFileType(file, cb);
   },
-}).array("files", 2);
+}).fields([
+  { name: "image", maxCount: 1 },
+  { name: "media", maxCount: 1 },
+]);
 
 export default fileMiddleware;

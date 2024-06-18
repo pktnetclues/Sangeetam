@@ -1,6 +1,6 @@
-import sequelize from "../../utils/sequelize";
+import sequelize from "../../utils/sequelize.js";
 import { DataTypes, Model } from "sequelize";
-import User from "../auth/user.model";
+import User from "../auth/user.model.js";
 
 class AudioModel extends Model {}
 
@@ -51,5 +51,7 @@ AudioModel.init(
     modelName: "AudioModel",
   }
 );
+
+// AudioModel.sync();
 
 export default AudioModel;
