@@ -54,7 +54,7 @@ VideoModel.init(
     sequelize,
     tableName: "videos",
     modelName: "VideoModel",
-  },
+  }
 );
 
 VideoModel.belongsTo(User, { foreignKey: "uploadedBy" });

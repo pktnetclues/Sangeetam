@@ -11,12 +11,16 @@ interface VideoCardProps {
   title: string;
   thumbnail: string;
   videoUrl: string;
+  CreatedBy: string;
+  category: string;
 }
 
 const VideoCard: React.FC<VideoCardProps> = ({
   title,
   thumbnail,
   videoUrl,
+  category,
+  CreatedBy,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const videoRef = React.useRef<HTMLVideoElement>(null);
@@ -56,13 +60,15 @@ const VideoCard: React.FC<VideoCardProps> = ({
         overflow: "hidden",
       }}
       onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}>
-      <CardActionArea sx={{ height: 300 }}>
+      onMouseLeave={handleMouseLeave}
+    >
+      <CardActionArea sx={{ height: 200 }}>
         <div
           style={{
             position: "relative",
             paddingTop: `${(1 / videoAspectRatio) * 100}%`,
-          }}>
+          }}
+        >
           {isHovered ? (
             <video
               ref={videoRef}
@@ -70,7 +76,8 @@ const VideoCard: React.FC<VideoCardProps> = ({
               height="100%"
               muted
               loop
-              style={{ position: "absolute", top: 0, left: 0 }}>
+              style={{ position: "absolute", top: 0, left: 0 }}
+            >
               <source src={videoUrl} type="video/mp4" />
               Your browser does not support the video tag.
             </video>
@@ -86,8 +93,14 @@ const VideoCard: React.FC<VideoCardProps> = ({
         </div>
       </CardActionArea>
       <CardContent>
-        <Typography gutterBottom variant="h5" component="div">
+        <Typography gutterBottom variant="subtitle1" component="div">
           {title}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Category: {category}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          CreatedBy: {CreatedBy}
         </Typography>
       </CardContent>
     </Card>

@@ -20,7 +20,7 @@ Category.init(
     sequelize,
     tableName: "categories",
     modelName: "Category",
-  },
+  }
 );
 
 // Category.sync({ force: true }).then(() => {

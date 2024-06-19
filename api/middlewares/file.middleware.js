@@ -44,6 +44,7 @@ function checkFileType(file, cb) {
   const allowedTypes = {
     "image/jpeg": ["jpg", "jpeg"],
     "image/jpg": ["jpg"],
+    "image/webp": ["webp"],
     "image/png": ["png"],
     "audio/mp3": ["mp3"],
     "audio/mpeg": ["mp3"],
@@ -68,9 +69,9 @@ function checkFileType(file, cb) {
           `Error: Invalid file extension for ${
             file.fieldname
           }. Expected ${allowedTypes[file.mimetype].join(
-            " or ",
-          )}, but got ${extname}.`,
-        ),
+            " or "
+          )}, but got ${extname}.`
+        )
       );
     }
   } else {

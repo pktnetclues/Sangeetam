@@ -53,7 +53,7 @@ AudioModel.init(
     sequelize,
     tableName: "audios",
     modelName: "AudioModel",
-  },
+  }
 );
 
 // AudioModel.sync({ force: true }).then(() => {

@@ -18,15 +18,15 @@ const validationSchema = yup.object().shape({
   media: yup
     .mixed()
     .test("fileSize", "Video file should be less than 100MB", (value: any) => {
-      return value && value[0]?.size <= 1024 * 1024 * 100; // 10MB limit
+      return value && value[0]?.size <= 1024 * 1024 * 100;
     })
     .test("fileType", "Only video files are allowed", (value: any) => {
       return value && value[0]?.type.includes("video");
     }),
   thumbnail: yup
     .mixed()
-    .test("fileSize", "Image should be less than 1MB", (value: any) => {
-      return value && value[0]?.size <= 1024 * 1024; // 1MB limit
+    .test("fileSize", "Image should be less than 5MB", (value: any) => {
+      return value && value[0]?.size <= 1024 * 1024 * 5;
     })
     .test("fileType", "Only images are allowed", (value: any) => {
       return value && value[0]?.type.includes("image");
@@ -108,7 +108,8 @@ const UploadVideo: React.FC<UploadVideoProps> = ({
           borderRadius: "5px",
           boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
           padding: "20px",
-        }}>
+        }}
+      >
         <Typography variant="h5" align="center" gutterBottom>
           Upload Video
         </Typography>
@@ -169,7 +170,8 @@ const UploadVideo: React.FC<UploadVideoProps> = ({
           <Typography
             sx={{
               mb: 2,
-            }}>
+            }}
+          >
             Upload Thumbnail Image File
           </Typography>
 

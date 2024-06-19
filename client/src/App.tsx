@@ -11,6 +11,7 @@ import PendingUsers from "./components/admin/PendingUsers";
 import Audios from "./components/admin/Audios";
 import Videos from "./components/admin/Videos";
 import { ConfirmProvider } from "material-ui-confirm";
+import Homepage from "./components/user/Homepage";
 
 const Login = lazy(() => import("./components/auth/Login"));
 const Register = lazy(() => import("./components/auth/Register"));
@@ -37,7 +38,9 @@ function App() {
                 <Route path="/admin/audios" element={<Audios />} />
                 <Route path="/admin/videos" element={<Videos />} />
               </Route>
-              <Route path="/user/home" element={<UserRoutes />} />
+              <Route element={<UserRoutes />}>
+                <Route path="/user/home" element={<Homepage />} />
+              </Route>
               <Route path="/*" element={<h1>Not Found</h1>} />
             </Routes>
           </Suspense>

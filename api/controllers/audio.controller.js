@@ -61,11 +61,11 @@ const uploadAudio = async (req, res) => {
 
 const getAllAudios = async (req, res) => {
   try {
-    const { isAdmin } = req.user;
+    // const { isAdmin } = req.user;
 
-    if (!isAdmin) {
-      return res.status(200).json({ message: "you are not authorized" });
-    }
+    // if (!isAdmin) {
+    //   return res.status(200).json({ message: "you are not authorized" });
+    // }
 
     const fetchAudios = await AudioModel.findAll({
       where: {

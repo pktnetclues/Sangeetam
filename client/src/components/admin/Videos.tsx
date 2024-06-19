@@ -6,11 +6,14 @@ import {
   IconButton,
   DialogContent,
   Grid,
+  Box,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import VideoCard from "../common/VideoCard";
 import UploadVideo from "../common/UploadVideo";
 import axios from "axios";
+import DeleteVideo from "./DeleteVideo";
+import VideoPlayer from "../common/VideoPlayer";
 
 const Videos: React.FC = () => {
   const [open, setOpen] = useState(false);
@@ -46,7 +49,8 @@ const Videos: React.FC = () => {
         }}
         variant="outlined"
         color="primary"
-        onClick={handleClickDialog}>
+        onClick={handleClickDialog}
+      >
         Upload new Video
       </Button>
       <Dialog open={open} onClose={handleClickDialog} maxWidth="sm" fullWidth>
@@ -60,7 +64,8 @@ const Videos: React.FC = () => {
               right: 8,
               top: 8,
               color: (theme) => theme.palette.grey[500],
-            }}>
+            }}
+          >
             <CloseIcon />
           </IconButton>
         </DialogTitle>
@@ -71,12 +76,23 @@ const Videos: React.FC = () => {
 
       <Grid container spacing={2}>
         {videos.map((video) => (
-          <Grid item key={video.id} xs={12} sm={6} md={4} lg={3}>
-            <VideoCard
+          <Grid item key={video.videoId} xs={12} sm={6} md={4} lg={3}>
+            <VideoPlayer
               title={video.title}
               thumbnail={`http://localhost:4000/assets/thumbnails/${video.thumbnail}`}
               videoUrl={`http://localhost:4000/assets/videos/${video.videoUrl}`}
+              category={video.Category.categoryName}
+              CreatedBy={video.user.name}
             />
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-around",
+                width: "100%",
+              }}
+            >
+              <DeleteVideo videoId={video.videoId} getVideos={getVideos} />
+            </Box>
           </Grid>
         ))}
       </Grid>
