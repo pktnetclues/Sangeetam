@@ -13,7 +13,7 @@ const AdminRoutes: React.FC = () => {
 
   if (user?.isAdmin === false) {
     toast.error("You are not authorized to access this page");
-    return <Navigate to="/" />;
+    return <Navigate to="/user/home" />;
   }
 
   return user?.email ? (

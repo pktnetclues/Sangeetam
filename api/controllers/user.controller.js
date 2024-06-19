@@ -85,7 +85,6 @@ const approveUser = async (req, res) => {
     }
 
     const { name, email, action } = req.body;
-    console.log(action);
 
     if (action === "reject") {
       const response = await User.destroy({
@@ -109,7 +108,7 @@ const approveUser = async (req, res) => {
 
     const approved = await User.update(
       { isApproved: true },
-      { where: { email } },
+      { where: { email } }
     );
 
     if (approved[0] === 1) {
@@ -170,7 +169,7 @@ const login = async (req, res) => {
 
     const comparePassword = await bcrypt.compare(
       password,
-      existingUser.password,
+      existingUser.password
     );
 
     if (!comparePassword) {
@@ -189,7 +188,7 @@ const login = async (req, res) => {
         process.env.JWT_SECRET,
         {
           expiresIn: "1d",
-        },
+        }
       );
 
       return res
@@ -272,7 +271,7 @@ const verifyForgetPassToken = async (req, res) => {
 
     if (!savedToken) {
       return res.redirect(
-        `http://localhost:5173/forgot-password?message=Invalid or expired token please try again`,
+        `http://localhost:5173/forgot-password?message=Invalid or expired token please try again`
       );
     }
 
@@ -285,7 +284,7 @@ const verifyForgetPassToken = async (req, res) => {
     return res
       .status(200)
       .redirect(
-        `http://localhost:5173/change-password?email=${email}&token=${token}`,
+        `http://localhost:5173/change-password?email=${email}&token=${token}`
       );
   } catch (error) {
     return res.status(500).json({ message: error.message });
@@ -322,7 +321,7 @@ const updatePassword = async (req, res) => {
 
     const updateUser = await User.update(
       { password: hashedPassword },
-      { where: { email: email } },
+      { where: { email: email } }
     );
 
     if (updateUser[0] === 1) {
@@ -448,7 +447,7 @@ const deleteUser = async (req, res) => {
 
     const response = await User.update(
       { isDeleted: true },
-      { where: { email } },
+      { where: { email } }
     );
 
     if (response[0] === 1) {

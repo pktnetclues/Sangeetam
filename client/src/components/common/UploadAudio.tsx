@@ -13,15 +13,15 @@ const validationSchema = yup.object().shape({
   media: yup
     .mixed()
     .test("fileSize", "Audio file should be less than 10MB", (value: any) => {
-      return value && value[0]?.size <= 1024 * 1024 * 10; // 10MB limit
+      return value && value[0]?.size <= 1024 * 1024 * 20; // 10MB limit
     })
     .test("fileType", "Only audio files are allowed", (value: any) => {
       return value && value[0]?.type.includes("audio");
     }),
   thumbnail: yup
     .mixed()
-    .test("fileSize", "Image should be less than 1MB", (value: any) => {
-      return value && value[0]?.size <= 1024 * 1024; // 1MB limit
+    .test("fileSize", "Image should be less than 5MB", (value: any) => {
+      return value && value[0]?.size <= 1024 * 1024 * 5; // 1MB limit
     })
     .test("fileType", "Only images are allowed", (value: any) => {
       return value && value[0]?.type.includes("image");
@@ -103,7 +103,8 @@ const UploadAudio: React.FC<UploadAudioProps> = ({
         alignItems: "center",
         margin: "auto",
       }}
-      maxWidth="xs">
+      maxWidth="xs"
+    >
       <form
         name="form"
         style={{
@@ -112,7 +113,8 @@ const UploadAudio: React.FC<UploadAudioProps> = ({
           padding: "20px",
           boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
         }}
-        onSubmit={handleSubmit(handleFormSubmit)}>
+        onSubmit={handleSubmit(handleFormSubmit)}
+      >
         <TextField
           id="album"
           label="Album"
@@ -181,7 +183,8 @@ const UploadAudio: React.FC<UploadAudioProps> = ({
         <Typography
           sx={{
             mb: 2,
-          }}>
+          }}
+        >
           Upload Thumbnail Image File
         </Typography>
 

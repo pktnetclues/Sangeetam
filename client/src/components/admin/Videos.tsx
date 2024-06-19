@@ -9,11 +9,11 @@ import {
   Box,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import VideoCard from "../common/VideoCard";
 import UploadVideo from "../common/UploadVideo";
 import axios from "axios";
 import DeleteVideo from "./DeleteVideo";
 import VideoPlayer from "../common/VideoPlayer";
+import EditVideo from "./EditVideo";
 
 const Videos: React.FC = () => {
   const [open, setOpen] = useState(false);
@@ -92,6 +92,7 @@ const Videos: React.FC = () => {
               }}
             >
               <DeleteVideo videoId={video.videoId} getVideos={getVideos} />
+              <EditVideo videoDetails={video} callVideos={getVideos} />
             </Box>
           </Grid>
         ))}

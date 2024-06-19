@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
@@ -7,6 +7,7 @@ import {
   Container,
   Typography,
   CircularProgress,
+  MenuItem,
 } from "@mui/material";
 import { toast } from "sonner";
 import axios from "axios";
@@ -45,6 +46,7 @@ const UploadVideo: React.FC<UploadVideoProps> = ({
   const [mediaFile, setMediaFile] = useState<FileList | null>(null);
   const [thumbnailFile, setThumbnailFile] = useState<FileList | null>(null);
   const [loading, setLoading] = useState(false);
+  const [categories, setCategories] = useState([]);
 
   const {
     register,
@@ -54,6 +56,23 @@ const UploadVideo: React.FC<UploadVideoProps> = ({
   } = useForm({
     resolver: yupResolver(validationSchema),
   });
+
+  useEffect(() => {
+    getCategories();
+  }, []);
+
+  const getCategories = async () => {
+    try {
+      const response = await axios.get("/api/categories", {
+        withCredentials: true,
+      });
+      if (response.status === 200) {
+        setCategories(response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
 
   const handleFormSubmit = async (data: any) => {
     const formData = new FormData();
@@ -110,9 +129,6 @@ const UploadVideo: React.FC<UploadVideoProps> = ({
           padding: "20px",
         }}
       >
-        <Typography variant="h5" align="center" gutterBottom>
-          Upload Video
-        </Typography>
         <form onSubmit={handleSubmit(handleFormSubmit)}>
           <TextField
             id="title"
@@ -127,15 +143,21 @@ const UploadVideo: React.FC<UploadVideoProps> = ({
 
           <TextField
             id="categoryId"
-            label="Category ID"
+            label="Category"
+            select
             error={!!errors.categoryId}
             helperText={errors.categoryId?.message}
             {...register("categoryId")}
             fullWidth
             variant="outlined"
             margin="normal"
-            type="number"
-          />
+          >
+            {categories.map((category: any) => (
+              <MenuItem key={category.categoryId} value={category.categoryId}>
+                {category.categoryName}
+              </MenuItem>
+            ))}
+          </TextField>
 
           <TextField
             id="media"

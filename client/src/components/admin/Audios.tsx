@@ -14,11 +14,11 @@ import {
   Typography,
 } from "@mui/material";
 import { AudioType } from "../../types";
-import AudioPlayer from "react-h5-audio-player";
-import "react-h5-audio-player/lib/styles.css";
 import UploadAudio from "../common/UploadAudio";
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteAudio from "./DeleteAudio";
+import ReactPlayer from "react-player/lazy";
+import EditAudio from "./EditAudio";
 
 const Audios: React.FC = () => {
   const [audios, setAudios] = useState<AudioType[]>([]);
@@ -53,7 +53,8 @@ const Audios: React.FC = () => {
         }}
         variant="outlined"
         color="primary"
-        onClick={handleClickDialog}>
+        onClick={handleClickDialog}
+      >
         Upload new Audio
       </Button>
       <Dialog open={open} onClose={handleClickDialog} maxWidth="sm" fullWidth>
@@ -67,7 +68,8 @@ const Audios: React.FC = () => {
               right: 8,
               top: 8,
               color: (theme) => theme.palette.grey[500],
-            }}>
+            }}
+          >
             <CloseIcon />
           </IconButton>
         </DialogTitle>
@@ -85,7 +87,8 @@ const Audios: React.FC = () => {
                 flexDirection: "column",
                 justifyContent: "space-between",
                 height: "100%",
-              }}>
+              }}
+            >
               <Box sx={{ height: 140 }}>
                 <img
                   style={{ width: "100%", height: "100%", objectFit: "cover" }}
@@ -105,20 +108,24 @@ const Audios: React.FC = () => {
                 </Typography>
               </CardContent>
               <CardActions
-                sx={{ flexDirection: "column", alignItems: "stretch" }}>
-                <AudioPlayer
-                  showSkipControls={false}
-                  autoPlay={false}
-                  src={`http://localhost:4000/assets/audios/${audio.audioUrl}`}
-                  style={{ width: "100%" }}
+                sx={{ flexDirection: "column", alignItems: "stretch" }}
+              >
+                <ReactPlayer
+                  height="30px"
+                  width="100%"
+                  controls
+                  url={`http://localhost:4000/assets/audios/${audio.audioUrl}`}
                 />
+
                 <Box
                   sx={{
                     display: "flex",
                     justifyContent: "space-between",
                     width: "100%",
-                  }}>
+                  }}
+                >
                   <DeleteAudio audioId={audio.audioId} getAudios={getAudios} />
+                  <EditAudio audioDetails={audio} callAudios={getAudios} />
                 </Box>
               </CardActions>
             </Card>

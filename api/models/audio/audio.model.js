@@ -56,6 +56,8 @@ AudioModel.init(
   }
 );
 
+AudioModel.belongsTo(User, { foreignKey: "uploadedBy" });
+
 // AudioModel.sync({ force: true }).then(() => {
 //   console.log("AudioModel created");
 // });

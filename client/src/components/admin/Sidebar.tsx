@@ -18,6 +18,8 @@ import HowToRegIcon from "@mui/icons-material/HowToReg";
 import AudiotrackIcon from "@mui/icons-material/Audiotrack";
 import OndemandVideoIcon from "@mui/icons-material/OndemandVideo";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+import QuizIcon from "@mui/icons-material/Quiz";
+import MusicOffIcon from "@mui/icons-material/MusicOff";
 import axios from "axios";
 import { toast } from "sonner";
 
@@ -51,6 +53,16 @@ const Sidebar = () => {
     { label: "Audios", icon: <AudiotrackIcon />, path: "/admin/audios" },
     { label: "Videos", icon: <OndemandVideoIcon />, path: "/admin/videos" },
     {
+      label: "Pending Audios",
+      icon: <MusicOffIcon />,
+      path: "/admin/pending-audios",
+    },
+    {
+      label: "Pending Videos",
+      icon: <QuizIcon />,
+      path: "/admin/pending-videos",
+    },
+    {
       label: "Logout",
       icon: <ExitToAppIcon />,
       onClick: handleLogout,
@@ -68,20 +80,23 @@ const Sidebar = () => {
         width: 240,
         flexShrink: 0,
         [`& .MuiDrawer-paper`]: { width: 240, boxSizing: "border-box" },
-      }}>
+      }}
+    >
       <Box sx={{ overflow: "auto" }}>
         <Typography
           sx={{
             textAlign: "center",
             padding: "10px",
-          }}>
+          }}
+        >
           Sangeetam
         </Typography>
         <Divider />
         <List
           sx={{
             mt: "10px",
-          }}>
+          }}
+        >
           {menuItems.map((item) => (
             <ListItem key={item.label} disablePadding>
               <ListItemButton
@@ -95,7 +110,8 @@ const Sidebar = () => {
                       backgroundColor: theme.palette.primary.dark,
                     },
                   },
-                }}>
+                }}
+              >
                 <ListItemIcon>{item.icon}</ListItemIcon>
                 <ListItemText primary={item.label} />
               </ListItemButton>

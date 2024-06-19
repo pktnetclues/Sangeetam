@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import axios, { AxiosError } from "axios";
 import * as yup from "yup";
 import { Link, useNavigate } from "react-router-dom";
+import { useUser } from "../../context/Context";
 
 interface IFormInput {
   email: string;
@@ -29,6 +30,7 @@ const validationSchema = yup.object().shape({
 });
 
 const Login: React.FC = () => {
+  const { getProfile } = useUser();
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const {
@@ -52,14 +54,11 @@ const Login: React.FC = () => {
 
       if (response.status === 200) {
         setLoading(false);
+        getProfile();
         toast.success("Logged in successfully");
-        console.log(response.data);
-
-        if (response.data.isAdmin) {
-          navigate("/admin/users");
-        } else {
-          navigate("/user/home");
-        }
+        response.data.isAdmin
+          ? navigate("/admin/users")
+          : navigate("/user/home");
       }
     } catch (error) {
       setLoading(false);

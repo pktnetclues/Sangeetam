@@ -55,11 +55,11 @@ const uploadVideo = async (req, res) => {
 
 const getAllVideos = async (req, res) => {
   try {
-    const { isAdmin } = req.user;
+    // const { isAdmin } = req.user;
 
-    if (!isAdmin) {
-      return res.status(403).json({ message: "Unauthorized" });
-    }
+    // if (!isAdmin) {
+    //   return res.status(403).json({ message: "Unauthorized" });
+    // }
 
     const videos = await VideoModel.findAll({
       where: {
@@ -69,7 +69,7 @@ const getAllVideos = async (req, res) => {
       include: [
         {
           model: Category,
-          attributes: ["categoryName"],
+          attributes: ["categoryName", "categoryId"],
         },
         {
           model: User,
@@ -79,6 +79,42 @@ const getAllVideos = async (req, res) => {
       attributes: {
         exclude: ["categoryId", "isDeleted"],
       },
+      order: [["createdAt", "DESC"]],
+    });
+
+    return res.status(200).json(videos);
+  } catch (error) {
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const getPendingVideos = async (req, res) => {
+  try {
+    const { isAdmin } = req.user;
+
+    if (!isAdmin) {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+
+    const videos = await VideoModel.findAll({
+      where: {
+        isApproved: false,
+        isDeleted: false,
+      },
+      include: [
+        {
+          model: Category,
+          attributes: ["categoryName", "categoryId"],
+        },
+        {
+          model: User,
+          attributes: ["userId", "name"],
+        },
+      ],
+      attributes: {
+        exclude: ["categoryId", "isDeleted"],
+      },
+      order: [["createdAt", "DESC"]],
     });
 
     return res.status(200).json(videos);
@@ -158,4 +194,44 @@ const deleteVideo = async (req, res) => {
   }
 };
 
-export { uploadVideo, getAllVideos, editVideo, deleteVideo };
+const approveVideo = async (req, res) => {
+  try {
+    const { isAdmin } = req.user;
+    const videoId = req.params.videoId;
+
+    if (!isAdmin) {
+      return res.status(400).json({ message: "Unauthorized" });
+    }
+
+    await VideoModel.update(
+      { isApproved: true },
+      { where: { videoId: videoId } }
+    );
+
+    return res.status(200).json({ message: "success" });
+  } catch (error) {
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const getCategories = async (req, res) => {
+  try {
+    const categories = await Category.findAll({
+      order: [["categoryName", "ASC"]],
+    });
+
+    return res.status(200).json(categories);
+  } catch (error) {
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export {
+  uploadVideo,
+  getAllVideos,
+  getPendingVideos,
+  editVideo,
+  deleteVideo,
+  approveVideo,
+  getCategories,
+};

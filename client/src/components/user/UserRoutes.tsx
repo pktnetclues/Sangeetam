@@ -6,8 +6,6 @@ import Sidebar from "./Sidebar";
 const UserRoutes: React.FC = () => {
   const { user, loading } = useUser();
 
-  console.log(user);
-
   if (loading) {
     return <CircularProgress />;
   }

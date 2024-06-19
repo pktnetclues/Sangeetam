@@ -19,7 +19,10 @@ const authMiddleware = async (req, res, next) => {
     }
 
     // Check if the user exists
-    const user = await User.findOne({ where: { userId: decoded.userId } });
+    const user = await User.findOne({
+      attributes: ["userId"],
+      where: { userId: decoded.userId },
+    });
     if (!user) {
       return res.status(401).json({ message: "User not found" });
     }
@@ -35,7 +38,7 @@ const authMiddleware = async (req, res, next) => {
     }
 
     // Check if the user is inactive
-    if (decoded.status === "inactive") {
+    if (decoded.status === false) {
       return res.status(401).json({ message: "User is inactive" });
     }
 

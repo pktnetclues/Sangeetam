@@ -59,6 +59,52 @@ const uploadAudio = async (req, res) => {
   }
 };
 
+const getPendingAudios = async (req, res) => {
+  try {
+    const { isAdmin } = req.user;
+
+    if (!isAdmin) {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+
+    const videos = await AudioModel.findAll({
+      where: {
+        isApproved: false,
+        isDeleted: false,
+      },
+
+      attributes: {
+        exclude: ["isDeleted"],
+      },
+      order: [["createdAt", "DESC"]],
+    });
+
+    return res.status(200).json(videos);
+  } catch (error) {
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const approveAudio = async (req, res) => {
+  try {
+    const { isAdmin } = req.user;
+    const audioId = req.params.audioId;
+
+    if (!isAdmin) {
+      return res.status(400).json({ message: "Unauthorized" });
+    }
+
+    await AudioModel.update(
+      { isApproved: true },
+      { where: { audioId: audioId } }
+    );
+
+    return res.status(200).json({ message: "success" });
+  } catch (error) {
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 const getAllAudios = async (req, res) => {
   try {
     // const { isAdmin } = req.user;
@@ -72,6 +118,7 @@ const getAllAudios = async (req, res) => {
         isApproved: true,
         isDeleted: false,
       },
+      order: [["createdAt", "DESC"]],
     });
 
     return res.status(200).json(fetchAudios);
@@ -158,4 +205,11 @@ const deleteAudio = async (req, res) => {
   }
 };
 
-export { uploadAudio, getAllAudios, editAudio, deleteAudio };
+export {
+  uploadAudio,
+  getAllAudios,
+  getPendingAudios,
+  approveAudio,
+  editAudio,
+  deleteAudio,
+};

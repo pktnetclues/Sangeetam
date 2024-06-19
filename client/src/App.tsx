@@ -12,6 +12,11 @@ import Audios from "./components/admin/Audios";
 import Videos from "./components/admin/Videos";
 import { ConfirmProvider } from "material-ui-confirm";
 import Homepage from "./components/user/Homepage";
+import AllAudios from "./components/user/AllAudios";
+import AllVideos from "./components/user/AllVideos";
+import PendingVideos from "./components/admin/PendingVideos";
+import Playlist from "./components/user/Playlist";
+import PendingAudios from "./components/admin/PendingAudio";
 
 const Login = lazy(() => import("./components/auth/Login"));
 const Register = lazy(() => import("./components/auth/Register"));
@@ -37,9 +42,20 @@ function App() {
                 <Route path="/admin/pending-users" element={<PendingUsers />} />
                 <Route path="/admin/audios" element={<Audios />} />
                 <Route path="/admin/videos" element={<Videos />} />
+                <Route
+                  path="/admin/pending-videos"
+                  element={<PendingVideos />}
+                />
+                <Route
+                  path="/admin/pending-audios"
+                  element={<PendingAudios />}
+                />
               </Route>
               <Route element={<UserRoutes />}>
                 <Route path="/user/home" element={<Homepage />} />
+                <Route path="/user/audios" element={<AllAudios />} />
+                <Route path="/user/videos" element={<AllVideos />} />
+                <Route path="/user/playlist" element={<Playlist />} />
               </Route>
               <Route path="/*" element={<h1>Not Found</h1>} />
             </Routes>

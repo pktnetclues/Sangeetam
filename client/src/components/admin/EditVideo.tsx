@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
@@ -11,27 +11,27 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
+  MenuItem,
 } from "@mui/material";
 import { toast } from "sonner";
 import axios from "axios";
 import * as yup from "yup";
-import { AudioType } from "../../types";
+import { VideoType } from "../../types";
 import CloseIcon from "@mui/icons-material/Close";
 
 const validationSchema = yup.object().shape({
-  album: yup.string().required("Album is required"),
-  singerName: yup.string().required("Singer name is required"),
-  writerName: yup.string().required("Writer name is required"),
+  title: yup.string().required("Title is required"),
+  categoryId: yup.string().required("Category is required"),
   media: yup
     .mixed()
     .notRequired()
-    .test("fileSize", "Audio file should be less than 10MB", (value: any) => {
+    .test("fileSize", "Video file should be less than 100MB", (value: any) => {
       if (!value || value.length === 0) return true;
-      return value[0]?.size <= 1024 * 1024 * 50;
+      return value[0]?.size <= 1024 * 1024 * 100;
     })
-    .test("fileType", "Only audio files are allowed", (value: any) => {
+    .test("fileType", "Only video files are allowed", (value: any) => {
       if (!value || value.length === 0) return true;
-      return value[0]?.type.includes("audio");
+      return value[0]?.type.includes("video");
     }),
   thumbnail: yup
     .mixed()
@@ -46,19 +46,37 @@ const validationSchema = yup.object().shape({
     }),
 });
 
-interface UploadAudioProps {
-  audioDetails: AudioType;
-  callAudios: () => void;
+interface UploadVideoProps {
+  videoDetails: VideoType;
+  callVideos: () => void;
 }
 
-const EditAudio: React.FC<UploadAudioProps> = ({
-  audioDetails,
-  callAudios,
+const EditVideo: React.FC<UploadVideoProps> = ({
+  videoDetails,
+  callVideos,
 }) => {
   const [mediaFile, setMediaFile] = useState<FileList | null>(null);
   const [thumbnailFile, setThumbnailFile] = useState<FileList | null>(null);
   const [loading, setLoading] = useState(false);
+  const [categories, setCategories] = useState([]);
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    getCategories();
+  }, []);
+
+  const getCategories = async () => {
+    try {
+      const response = await axios.get("/api/categories", {
+        withCredentials: true,
+      });
+      if (response.status === 200) {
+        setCategories(response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
 
   const handleClickDialog = () => {
     setOpen(!open);
@@ -68,32 +86,42 @@ const EditAudio: React.FC<UploadAudioProps> = ({
     register,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm({
     defaultValues: {
-      album: audioDetails.album,
-      singerName: audioDetails.singerName,
-      writerName: audioDetails.writerName,
+      title: videoDetails.title,
+      categoryId: videoDetails.categoryId,
     },
     resolver: yupResolver(validationSchema),
   });
 
+  useEffect(() => {
+    if (videoDetails && categories.length > 0) {
+      const category = categories.find(
+        (cat) => cat.id === videoDetails.categoryId
+      );
+      if (category) {
+        setValue("categoryId", category.id);
+      }
+    }
+  }, [videoDetails, categories, setValue]);
+
   const handleFormSubmit = async (data: any) => {
     const formData = new FormData();
-    formData.append("audioId", audioDetails.audioId);
-    formData.append("album", data.album);
-    formData.append("singerName", data.singerName);
-    formData.append("writerName", data.writerName);
+    formData.append("videoId", videoDetails.videoId);
+    formData.append("title", data.title);
+    formData.append("categoryId", data.categoryId);
     if (mediaFile) {
       formData.append("media", mediaFile[0]);
     }
     if (thumbnailFile) {
-      formData.append("image", thumbnailFile[0]);
+      formData.append("thumbnail", thumbnailFile[0]);
     }
 
     setLoading(true);
     try {
-      const response = await axios.put(`/api/edit-audio`, formData, {
+      const response = await axios.put(`/api/edit-video`, formData, {
         withCredentials: true,
         headers: {
           "Content-Type": "multipart/form-data",
@@ -102,14 +130,14 @@ const EditAudio: React.FC<UploadAudioProps> = ({
       setLoading(false);
       if (response.status === 200) {
         reset();
-        toast.success("Audio Updated");
-        callAudios();
+        toast.success("Video Updated");
+        callVideos();
         handleClickDialog();
       }
     } catch (error) {
       setLoading(false);
-      console.error("Error creating post:", error);
-      toast.error("Failed to update audio");
+      console.error("Error updating video:", error);
+      toast.error("Failed to update video");
     }
   };
 
@@ -139,7 +167,7 @@ const EditAudio: React.FC<UploadAudioProps> = ({
       </Button>
       <Dialog open={open} onClose={handleClickDialog} maxWidth="sm" fullWidth>
         <DialogTitle>
-          Edit Audio
+          Edit Video
           <IconButton
             aria-label="close"
             onClick={handleClickDialog}
@@ -173,37 +201,36 @@ const EditAudio: React.FC<UploadAudioProps> = ({
               onSubmit={handleSubmit(handleFormSubmit)}
             >
               <TextField
-                id="album"
-                label="Album"
-                error={!!errors.album}
-                helperText={errors.album?.message}
-                {...register("album")}
+                id="title"
+                label="Title"
+                error={!!errors.title}
+                helperText={errors.title?.message}
+                {...register("title")}
                 fullWidth
                 variant="outlined"
                 margin="none"
               />
 
               <TextField
-                id="singerName"
-                label="Singer Name"
-                error={!!errors.singerName}
-                helperText={errors.singerName?.message}
-                {...register("singerName")}
+                id="categoryId"
+                label="Category"
+                select
+                error={!!errors.categoryId}
+                helperText={errors.categoryId?.message}
+                {...register("categoryId")}
                 fullWidth
                 variant="outlined"
                 margin="normal"
-              />
-
-              <TextField
-                id="writerName"
-                label="Writer Name"
-                error={!!errors.writerName}
-                helperText={errors.writerName?.message}
-                {...register("writerName")}
-                fullWidth
-                variant="outlined"
-                margin="normal"
-              />
+              >
+                {categories.map((category: any) => (
+                  <MenuItem
+                    key={category.categoryId}
+                    value={category.categoryId}
+                  >
+                    {category.categoryName}
+                  </MenuItem>
+                ))}
+              </TextField>
 
               <TextField
                 id="media"
@@ -218,9 +245,9 @@ const EditAudio: React.FC<UploadAudioProps> = ({
                 fullWidth
                 variant="outlined"
                 margin="normal"
-                placeholder="Upload audio file"
+                placeholder="Upload video file"
               />
-              <Typography>Update Audio File (If you want the new)</Typography>
+              <Typography>Update Video File (If you want the new)</Typography>
 
               <TextField
                 id="thumbnail"
@@ -242,7 +269,7 @@ const EditAudio: React.FC<UploadAudioProps> = ({
                   mb: 2,
                 }}
               >
-                Upload Thumbnail Image File(If you want the new)
+                Upload Thumbnail Image File (If you want the new)
               </Typography>
 
               {!loading ? (
@@ -267,4 +294,4 @@ const EditAudio: React.FC<UploadAudioProps> = ({
   );
 };
 
-export default EditAudio;
+export default EditVideo;

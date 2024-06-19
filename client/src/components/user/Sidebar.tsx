@@ -16,6 +16,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import AudiotrackIcon from "@mui/icons-material/Audiotrack";
 import OndemandVideoIcon from "@mui/icons-material/OndemandVideo";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+import SubscriptionsIcon from "@mui/icons-material/Subscriptions";
 import axios from "axios";
 import { toast } from "sonner";
 import { HomeRounded } from "@mui/icons-material";
@@ -42,8 +43,9 @@ const Sidebar = () => {
 
   const menuItems = [
     { label: "Homepage", icon: <HomeRounded />, path: "/user/home" },
-    { label: "Audios", icon: <AudiotrackIcon />, path: "/admin/audios" },
-    { label: "Videos", icon: <OndemandVideoIcon />, path: "/admin/videos" },
+    { label: "Audios", icon: <AudiotrackIcon />, path: "/user/audios" },
+    { label: "Videos", icon: <OndemandVideoIcon />, path: "/user/videos" },
+    { label: "Playlist", icon: <SubscriptionsIcon />, path: "/user/playlist" },
     {
       label: "Logout",
       icon: <ExitToAppIcon />,

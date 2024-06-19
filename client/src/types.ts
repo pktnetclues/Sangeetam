@@ -17,5 +17,14 @@ interface AudioType {
   isApproved: boolean;
   createdAt: string;
 }
+interface VideoType {
+  videoId: number;
+  category: string;
+  title: string;
+  createdBy: string;
+  thumbnail: string;
+  videoUrl: string;
+  createdAt: string;
+}
 
-export type { UserType, AudioType };
+export type { UserType, AudioType, VideoType };
