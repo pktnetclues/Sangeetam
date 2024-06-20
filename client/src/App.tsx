@@ -17,6 +17,7 @@ import AllVideos from "./components/user/AllVideos";
 import PendingVideos from "./components/admin/PendingVideos";
 import Playlist from "./components/user/Playlist";
 import PendingAudios from "./components/admin/PendingAudio";
+import AudioPlaylistDetail from "./components/user/AudioPlaylistDetail";
 
 const Login = lazy(() => import("./components/auth/Login"));
 const Register = lazy(() => import("./components/auth/Register"));
@@ -56,6 +57,10 @@ function App() {
                 <Route path="/user/audios" element={<AllAudios />} />
                 <Route path="/user/videos" element={<AllVideos />} />
                 <Route path="/user/playlist" element={<Playlist />} />
+                <Route
+                  path="/user/playlist/:playlistId"
+                  element={<AudioPlaylistDetail />}
+                />
               </Route>
               <Route path="/*" element={<h1>Not Found</h1>} />
             </Routes>

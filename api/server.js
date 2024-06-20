@@ -8,6 +8,8 @@ import audioRoutes from "./routes/audio.routes.js";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import videoRoutes from "./routes/video.routes.js";
+
+import audioPlaylistRoutes from "./routes/audio.playlist.routes.js";
 configDotenv();
 
 const app = express();
@@ -35,7 +37,7 @@ app.use("/assets", express.static(join(__dirname, "public", "assets")));
 
 console.log(__dirname + "/public/assets");
 app.use(cookieParser());
-app.use("/api", userRoutes, audioRoutes, videoRoutes);
+app.use("/api", userRoutes, audioRoutes, videoRoutes, audioPlaylistRoutes);
 
 sequelize;
 

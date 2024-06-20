@@ -32,6 +32,19 @@ const videoSchema = Yup.object().shape({
   categoryId: Yup.number().required("category id is required"),
 });
 
+const createPlaylistSchema = Yup.object().shape({
+  playlistName: Yup.string()
+    .max(100, "Playlist name cannot be longer than 100 characters")
+    .required("Playlist name is required"),
+});
+
+const createPlaylistContentSchema = Yup.object().shape({
+  playlistName: Yup.string()
+    .max(100, "Playlist name cannot be longer than 100 characters")
+    .required("Playlist name is required"),
+  audioId: Yup.number().integer().required("Content ID is required"),
+});
+
 export {
   registerSchema,
   loginSchema,
@@ -39,4 +52,6 @@ export {
   updatePassSchema,
   audioSchema,
   videoSchema,
+  createPlaylistSchema,
+  createPlaylistContentSchema,
 };
