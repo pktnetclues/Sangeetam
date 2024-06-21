@@ -214,8 +214,9 @@ const Register: React.FC = () => {
         <DialogTitle>Registration Successful</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Thank you for registering. Please wait for admin approval to
-            activate your account.
+            Thank you for registering.
+            <br />
+            Please wait for admin approval to activate your account.
           </DialogContentText>
         </DialogContent>
         <DialogActions>

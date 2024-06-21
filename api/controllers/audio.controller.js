@@ -1,4 +1,5 @@
 import AudioModel from "../models/audio/audio.model.js";
+import VideoModel from "../models/video/video.model.js";
 import { audioSchema } from "../schema/user.schema.js";
 import Yup from "yup";
 
@@ -76,6 +77,9 @@ const getPendingAudios = async (req, res) => {
       attributes: {
         exclude: ["isDeleted"],
       },
+      // include: [
+
+      // ]
       order: [["createdAt", "DESC"]],
     });
 
@@ -85,19 +89,39 @@ const getPendingAudios = async (req, res) => {
   }
 };
 
-const approveAudio = async (req, res) => {
+const approveContent = async (req, res) => {
   try {
     const { isAdmin } = req.user;
-    const audioId = req.params.audioId;
+    const { contentId, contentType, action } = req.body;
 
     if (!isAdmin) {
       return res.status(400).json({ message: "Unauthorized" });
     }
 
-    await AudioModel.update(
-      { isApproved: true },
-      { where: { audioId: audioId } }
-    );
+    const models = {
+      audio: AudioModel,
+      video: VideoModel,
+    };
+
+    const model = models[contentType];
+
+    if (!model) {
+      return res.status(400).json({ message: "Invalid content type" });
+    }
+
+    const operations = {
+      approve: { isApproved: true },
+    };
+
+    if (action === "approve") {
+      await model.update(operations[action], {
+        where: { [`${contentType}Id`]: contentId },
+      });
+    } else if (action === "reject") {
+      await model.destroy({ where: { [`${contentType}Id`]: contentId } });
+    } else {
+      return res.status(400).json({ message: "Invalid action" });
+    }
 
     return res.status(200).json({ message: "success" });
   } catch (error) {
@@ -209,7 +233,7 @@ export {
   uploadAudio,
   getAllAudios,
   getPendingAudios,
-  approveAudio,
+  approveContent,
   editAudio,
   deleteAudio,
 };

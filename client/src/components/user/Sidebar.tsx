@@ -10,8 +10,9 @@ import {
   useMediaQuery,
   Typography,
   Divider,
+  IconButton,
+  Collapse,
 } from "@mui/material";
-
 import { useNavigate, useLocation } from "react-router-dom";
 import AudiotrackIcon from "@mui/icons-material/Audiotrack";
 import OndemandVideoIcon from "@mui/icons-material/OndemandVideo";
@@ -46,16 +47,10 @@ const Sidebar = () => {
     { label: "Audios", icon: <AudiotrackIcon />, path: "/user/audios" },
     { label: "Videos", icon: <OndemandVideoIcon />, path: "/user/videos" },
     { label: "Playlist", icon: <SubscriptionsIcon />, path: "/user/playlist" },
-    {
-      label: "Logout",
-      icon: <ExitToAppIcon />,
-      onClick: handleLogout,
-    },
+    { label: "Logout", icon: <ExitToAppIcon />, onClick: handleLogout },
   ];
 
-  if (isSmallScreen) {
-    return null;
-  }
+  if (isSmallScreen) return null;
 
   return (
     <Drawer
@@ -63,43 +58,53 @@ const Sidebar = () => {
       sx={{
         width: 240,
         flexShrink: 0,
-        [`& .MuiDrawer-paper`]: { width: 240, boxSizing: "border-box" },
+        "& .MuiDrawer-paper": {
+          width: 240,
+          boxShadow: "0px 0px 10px rgba(0,0,0,0.1)",
+          borderRight: "1px solid rgba(0,0,0,0.1)",
+          boxSizing: "border-box",
+          padding: "10px",
+          overflow: "auto",
+        },
       }}
     >
-      <Box sx={{ overflow: "auto" }}>
-        <Typography
-          sx={{
-            textAlign: "center",
-            padding: "10px",
-          }}
-        >
+      <Box sx={{ padding: "20px" }}>
+        <Typography variant="h6" sx={{ textAlign: "center", padding: "10px" }}>
+          <IconButton sx={{ marginRight: "10px" }}>
+            <img src="/logo.png" height={40} width={40} />
+          </IconButton>
           Sangeetam
         </Typography>
-        <Divider />
-        <List
-          sx={{
-            mt: "10px",
-          }}
-        >
+        <Divider sx={{ marginBottom: "20px" }} />
+        <List sx={{ mt: "10px" }}>
           {menuItems.map((item) => (
-            <ListItem key={item.label} disablePadding>
-              <ListItemButton
-                onClick={item.onClick || (() => navigate(item.path))}
-                selected={item.path ? location.pathname === item.path : false}
-                sx={{
-                  "&.Mui-selected": {
-                    backgroundColor: theme.palette.primary.light,
-                    color: theme.palette.primary.contrastText,
-                    "&:hover": {
-                      backgroundColor: theme.palette.primary.dark,
+            <Collapse key={item.label} in={true} timeout={500}>
+              <ListItem disablePadding>
+                <ListItemButton
+                  onClick={item.onClick || (() => navigate(item.path))}
+                  selected={item.path ? location.pathname === item.path : false}
+                  sx={{
+                    backgroundColor: theme.palette.background.paper,
+                    padding: "10px 20px",
+                    borderLeft: "4px solid transparent",
+                    "&.Mui-selected": {
+                      backgroundColor: theme.palette.primary.light,
+                      color: theme.palette.primary.contrastText,
+                      "&:hover": {
+                        backgroundColor: theme.palette.primary.light,
+                      },
                     },
-                  },
-                }}
-              >
-                <ListItemIcon>{item.icon}</ListItemIcon>
-                <ListItemText primary={item.label} />
-              </ListItemButton>
-            </ListItem>
+                    "&:hover": {
+                      backgroundColor: theme.palette.background.default,
+                      borderLeft: "2px solid " + theme.palette.primary.main,
+                    },
+                  }}
+                >
+                  <ListItemIcon sx={{ minWidth: 40 }}>{item.icon}</ListItemIcon>
+                  <ListItemText primary={item.label} sx={{ fontSize: 16 }} />
+                </ListItemButton>
+              </ListItem>
+            </Collapse>
           ))}
         </List>
       </Box>

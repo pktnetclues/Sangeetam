@@ -8,23 +8,23 @@ interface Playlist {
   playlistName: string;
 }
 
-const AudioPlaylist: React.FC = () => {
+const VideoPlaylists: React.FC = () => {
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
 
   useEffect(() => {
-    const fetchPlaylists = async () => {
+    const GetPlaylists = async () => {
       try {
-        const response = await axios.get("/api/get-audio-playlist", {
+        const response = await axios.get("/api/get-video-playlist", {
           withCredentials: true,
         });
         if (response.status === 200) {
           setPlaylists(response.data);
         }
       } catch (error) {
-        console.error("Error fetching audio playlists:", error);
+        console.error("Error fetching video playlist:", error);
       }
     };
-    fetchPlaylists();
+    GetPlaylists();
   }, []);
 
   return (
@@ -37,7 +37,7 @@ const AudioPlaylist: React.FC = () => {
       }}
     >
       <Typography variant="h5" mb={2} textAlign="center">
-        Audios Playlists
+        Videos Playlists
       </Typography>
       <Box
         sx={{
@@ -66,7 +66,7 @@ const AudioPlaylist: React.FC = () => {
             <Typography variant="h6" gutterBottom>
               {playlist?.playlistName}
             </Typography>
-            <Link to={`/user/playlist/audio/${playlist?.playlistId}`}>
+            <Link to={`/user/playlist/video/${playlist?.playlistId}`}>
               <Button variant="text" size="small" color="primary" fullWidth>
                 View Details
               </Button>
@@ -78,4 +78,4 @@ const AudioPlaylist: React.FC = () => {
   );
 };
 
-export default AudioPlaylist;
+export default VideoPlaylists;

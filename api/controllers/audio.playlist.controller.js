@@ -36,7 +36,7 @@ const addContentToPlaylist = async (req, res) => {
   try {
     await createPlaylistContentSchema.validate(req.body);
 
-    const { playlistName, audioId } = req.body;
+    const { playlistName, contentId } = req.body;
     const { userId } = req.user;
 
     let playlist = await AudioPlaylist.findOne({
@@ -48,7 +48,7 @@ const addContentToPlaylist = async (req, res) => {
     }
 
     const isAudioAlreadyinPlaylist = await AudioPlaylist_Content.findOne({
-      where: { audioId: audioId, playlistId: playlist.playlistId },
+      where: { audioId: contentId, playlistId: playlist.playlistId },
     });
 
     if (isAudioAlreadyinPlaylist) {
@@ -57,7 +57,7 @@ const addContentToPlaylist = async (req, res) => {
 
     const newContent = await AudioPlaylist_Content.create({
       playlistId: playlist.playlistId,
-      audioId,
+      audioId: contentId,
     });
 
     return res.status(200).json(newContent);
@@ -97,7 +97,6 @@ const getAudioContentByPlaylistId = async (req, res) => {
         {
           model: AudioModel,
           as: "audio",
-          // attributes: ["audioId", "album", "artist"],
         },
       ],
     });

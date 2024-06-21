@@ -1,24 +1,30 @@
 import { Suspense, lazy } from "react";
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { CircularProgress, CssBaseline } from "@mui/material";
+import { CssBaseline } from "@mui/material";
 import { Toaster } from "sonner";
 import { ContextProvider } from "./context/Context";
-import AdminRoutes from "./components/admin/AdminRoutes";
-import UserRoutes from "./components/user/UserRoutes";
-import Users from "./components/admin/Users";
-import PendingUsers from "./components/admin/PendingUsers";
-import Audios from "./components/admin/Audios";
-import Videos from "./components/admin/Videos";
 import { ConfirmProvider } from "material-ui-confirm";
-import Homepage from "./components/user/Homepage";
-import AllAudios from "./components/user/AllAudios";
-import AllVideos from "./components/user/AllVideos";
-import PendingVideos from "./components/admin/PendingVideos";
-import Playlist from "./components/user/Playlist";
-import PendingAudios from "./components/admin/PendingAudio";
-import AudioPlaylistDetail from "./components/user/AudioPlaylistDetail";
+import LoaderIcon from "./components/common/Loader";
 
+const AdminRoutes = lazy(() => import("./components/admin/AdminRoutes"));
+const UserRoutes = lazy(() => import("./components/user/UserRoutes"));
+const Users = lazy(() => import("./components/admin/Users"));
+const PendingUsers = lazy(() => import("./components/admin/PendingUsers"));
+const Audios = lazy(() => import("./components/admin/Audios"));
+const Videos = lazy(() => import("./components/admin/Videos"));
+const Homepage = lazy(() => import("./components/user/Homepage"));
+const AllAudios = lazy(() => import("./components/user/AllAudios"));
+const AllVideos = lazy(() => import("./components/user/AllVideos"));
+const PendingVideos = lazy(() => import("./components/admin/PendingVideos"));
+const PendingAudios = lazy(() => import("./components/admin/PendingAudio"));
+const Playlist = lazy(() => import("./components/user/Playlist"));
+const AudioPlaylistDetail = lazy(
+  () => import("./components/user/AudioPlaylistDetail")
+);
+const VideoPlaylistDetail = lazy(
+  () => import("./components/user/VideoPlaylistDetail")
+);
 const Login = lazy(() => import("./components/auth/Login"));
 const Register = lazy(() => import("./components/auth/Register"));
 const ForgetPassword = lazy(() => import("./components/auth/ForgetPassword"));
@@ -31,7 +37,7 @@ function App() {
         <Router>
           <CssBaseline />
           <Toaster position="top-center" duration={2000} />
-          <Suspense fallback={<CircularProgress />}>
+          <Suspense fallback={<LoaderIcon />}>
             <Routes>
               <Route path="/" element={<Login />} />
               <Route path="/login" element={<Login />} />
@@ -58,8 +64,12 @@ function App() {
                 <Route path="/user/videos" element={<AllVideos />} />
                 <Route path="/user/playlist" element={<Playlist />} />
                 <Route
-                  path="/user/playlist/:playlistId"
+                  path="/user/playlist/audio/:playlistId"
                   element={<AudioPlaylistDetail />}
+                />
+                <Route
+                  path="/user/playlist/video/:playlistId"
+                  element={<VideoPlaylistDetail />}
                 />
               </Route>
               <Route path="/*" element={<h1>Not Found</h1>} />

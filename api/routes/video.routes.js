@@ -1,6 +1,5 @@
 import express from "express";
 import {
-  approveVideo,
   deleteVideo,
   editVideo,
   getAllVideos,
@@ -20,8 +19,6 @@ videoRoutes
 videoRoutes.route("/all-videos").get(authMiddleware, getAllVideos);
 
 videoRoutes.route("/pending-videos").get(authMiddleware, getPendingVideos);
-
-videoRoutes.route("/approve-video/:videoId").get(authMiddleware, approveVideo);
 
 videoRoutes.route("/edit-video").put(authMiddleware, fileMiddleware, editVideo);
 

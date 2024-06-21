@@ -36,7 +36,7 @@ const validationSchema = yup.object().shape({
 
 interface UploadVideoProps {
   closeDialog: () => void;
-  callVideos: () => void;
+  callVideos?: () => void;
 }
 
 const UploadVideo: React.FC<UploadVideoProps> = ({

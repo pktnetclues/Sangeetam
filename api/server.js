@@ -30,8 +30,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Get the directory name of the current module file
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+// const __filename = ;
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // Serve static assets from the '/public/assets' directory
 app.use("/assets", express.static(join(__dirname, "public", "assets")));

@@ -18,4 +18,5 @@ sequelize
 //   console.log("Tables created");
 // });
 
+
 export default sequelize;

@@ -10,8 +10,9 @@ import {
   useMediaQuery,
   Typography,
   Divider,
+  IconButton,
+  alpha,
 } from "@mui/material";
-
 import { useNavigate, useLocation } from "react-router-dom";
 import GroupIcon from "@mui/icons-material/Group";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
@@ -62,16 +63,10 @@ const Sidebar = () => {
       icon: <QuizIcon />,
       path: "/admin/pending-videos",
     },
-    {
-      label: "Logout",
-      icon: <ExitToAppIcon />,
-      onClick: handleLogout,
-    },
+    { label: "Logout", icon: <ExitToAppIcon />, onClick: handleLogout },
   ];
 
-  if (isSmallScreen) {
-    return null;
-  }
+  if (isSmallScreen) return null;
 
   return (
     <Drawer
@@ -79,24 +74,37 @@ const Sidebar = () => {
       sx={{
         width: 240,
         flexShrink: 0,
-        [`& .MuiDrawer-paper`]: { width: 240, boxSizing: "border-box" },
+        overflowX: "hidden",
+        backgroundColor: theme.palette.primary.main,
+        ["& .MuiDrawer-paper"]: {
+          width: 240,
+          boxSizing: "border-box",
+          borderRadius: "0 10px 10px 0",
+          boxShadow: theme.shadows[5],
+        },
       }}
     >
-      <Box sx={{ overflow: "auto" }}>
+      <Box sx={{ overflow: "auto", padding: "10px" }}>
         <Typography
           sx={{
             textAlign: "center",
-            padding: "10px",
+            fontSize: "1.2rem",
+            fontWeight: "bold",
+            color: theme.palette.primary,
           }}
         >
+          <IconButton>
+            <img src="/logo.png" height={40} width={40} />
+          </IconButton>
           Sangeetam
         </Typography>
-        <Divider />
-        <List
+        <Divider
           sx={{
-            mt: "10px",
+            borderBottomWidth: 2,
+            borderColor: alpha(theme.palette.primary.main, 0.2),
           }}
-        >
+        />
+        <List sx={{ mt: "20px" }}>
           {menuItems.map((item) => (
             <ListItem key={item.label} disablePadding>
               <ListItemButton
@@ -110,10 +118,20 @@ const Sidebar = () => {
                       backgroundColor: theme.palette.primary.dark,
                     },
                   },
+                  "&:hover": {
+                    backgroundColor: alpha(theme.palette.primary.main, 0.1),
+                  },
                 }}
               >
-                <ListItemIcon>{item.icon}</ListItemIcon>
-                <ListItemText primary={item.label} />
+                <ListItemIcon sx={{ color: theme.palette.primary }}>
+                  {item.icon}
+                </ListItemIcon>
+                <ListItemText
+                  primary={item.label}
+                  sx={{
+                    color: theme.palette.primary,
+                  }}
+                />
               </ListItemButton>
             </ListItem>
           ))}

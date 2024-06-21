@@ -14,7 +14,7 @@ audioPlaylistRoutes
   .post(authMiddleware, createPlaylist);
 
 audioPlaylistRoutes
-  .route("/add-playlist-content")
+  .route("/add-playlist-content-audio")
   .post(authMiddleware, addContentToPlaylist);
 
 audioPlaylistRoutes

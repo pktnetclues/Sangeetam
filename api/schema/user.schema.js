@@ -42,7 +42,7 @@ const createPlaylistContentSchema = Yup.object().shape({
   playlistName: Yup.string()
     .max(100, "Playlist name cannot be longer than 100 characters")
     .required("Playlist name is required"),
-  audioId: Yup.number().integer().required("Content ID is required"),
+  contentId: Yup.number().integer().required("Content ID is required"),
 });
 
 export {

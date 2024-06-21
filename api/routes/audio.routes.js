@@ -1,7 +1,7 @@
 import express from "express";
 import fileMiddleware from "../middlewares/file.middleware.js";
 import {
-  approveAudio,
+  approveContent,
   deleteAudio,
   editAudio,
   getAllAudios,
@@ -20,7 +20,7 @@ audioRoutes.route("/all-audios").get(authMiddleware, getAllAudios);
 
 audioRoutes.route("/pending-audios").get(authMiddleware, getPendingAudios);
 
-audioRoutes.route("/approve-audio/:audioId").get(authMiddleware, approveAudio);
+audioRoutes.route("/approve-content").post(authMiddleware, approveContent);
 
 audioRoutes.route("/edit-audio").put(authMiddleware, fileMiddleware, editAudio);
 

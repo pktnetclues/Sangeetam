@@ -14,7 +14,7 @@ videoPlaylistRoutes
   .post(authMiddleware, createVideoPlaylist);
 
 videoPlaylistRoutes
-  .route("/add-playlist-content")
+  .route("/add-playlist-content-video")
   .post(authMiddleware, addVideoContentToPlaylist);
 
 videoPlaylistRoutes

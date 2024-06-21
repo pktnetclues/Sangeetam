@@ -30,7 +30,7 @@ const validationSchema = yup.object().shape({
 
 interface UploadAudioProps {
   closeDialog: () => void;
-  callAudios: () => void;
+  callAudios?: () => void;
 }
 
 const UploadAudio: React.FC<UploadAudioProps> = ({

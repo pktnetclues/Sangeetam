@@ -194,26 +194,6 @@ const deleteVideo = async (req, res) => {
   }
 };
 
-const approveVideo = async (req, res) => {
-  try {
-    const { isAdmin } = req.user;
-    const videoId = req.params.videoId;
-
-    if (!isAdmin) {
-      return res.status(400).json({ message: "Unauthorized" });
-    }
-
-    await VideoModel.update(
-      { isApproved: true },
-      { where: { videoId: videoId } }
-    );
-
-    return res.status(200).json({ message: "success" });
-  } catch (error) {
-    return res.status(500).json({ message: "Internal server error" });
-  }
-};
-
 const getCategories = async (req, res) => {
   try {
     const categories = await Category.findAll({
@@ -232,6 +212,5 @@ export {
   getPendingVideos,
   editVideo,
   deleteVideo,
-  approveVideo,
   getCategories,
 };
