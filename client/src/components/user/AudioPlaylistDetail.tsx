@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -38,9 +38,11 @@ const AudioPlaylistDetail = () => {
           width: "100%",
         }}
       >
-        {audios.map((audio) => (
-          <AudioCard audio={audio.audio} />
-        ))}
+        {audios.length > 0 ? (
+          audios.map((audio) => <AudioCard audio={audio.audio} />)
+        ) : (
+          <Typography>No Item in Playlist</Typography>
+        )}
       </Box>
     </div>
   );

@@ -1,4 +1,4 @@
-import { FC, useRef, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import {
   Card,
   CardActionArea,
@@ -8,6 +8,7 @@ import {
   Button,
 } from "@mui/material";
 import { TimeAgo } from "./Timeago";
+import axios from "axios";
 
 interface VideoCardProps {
   video: {
@@ -23,6 +24,23 @@ interface VideoCardProps {
 const VideoCard: FC<VideoCardProps> = ({ video }) => {
   const [loadVideo, setLoadVideo] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [playlists, setPlaylists] = useState([]);
+
+  useEffect(() => {
+    const GetPlaylists = async () => {
+      try {
+        const response = await axios.get("/api/get-video-playlist", {
+          withCredentials: true,
+        });
+        if (response.status === 200) {
+          setPlaylists(response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching audios:", error);
+      }
+    };
+    GetPlaylists();
+  }, []);
 
   const handlePlayVideo = () => {
     setLoadVideo(true);

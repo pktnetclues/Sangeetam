@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import {
   Card,
   Box,
@@ -9,6 +9,8 @@ import {
 } from "@mui/material";
 import { AudioType } from "../../types";
 import ReactPlayer from "react-player/lazy";
+import axios from "axios";
+import AddToPlaylist from "./AddToPlaylist";
 
 interface AudioCardProps {
   audio: AudioType;
@@ -16,13 +18,34 @@ interface AudioCardProps {
 
 const AudioCard: FC<AudioCardProps> = ({ audio }) => {
   const [loadAudio, setLoadAudio] = useState(false);
+  const [playlists, setPlaylists] = useState([]);
+
+  useEffect(() => {
+    const GetPlaylists = async () => {
+      try {
+        const response = await axios.get("/api/get-audio-playlist", {
+          withCredentials: true,
+        });
+        if (response.status === 200) {
+          setPlaylists(response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching audios:", error);
+      }
+    };
+    GetPlaylists();
+  }, []);
 
   const handlePlayAudio = () => {
     setLoadAudio(true);
   };
 
   return (
-    <Card elevation={3} sx={{ width: "19%", borderRadius: 2 }}>
+    <Card
+      key={audio.audioId}
+      elevation={3}
+      sx={{ width: "19%", borderRadius: 2 }}
+    >
       <Box sx={{ height: 140, position: "relative" }}>
         <img
           style={{
@@ -52,9 +75,17 @@ const AudioCard: FC<AudioCardProps> = ({ audio }) => {
         )}
       </Box>
       <CardContent sx={{ padding: 2 }}>
-        <Typography gutterBottom variant="subtitle1" component="div">
-          {audio.album}
-        </Typography>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+          }}
+        >
+          <Typography gutterBottom variant="subtitle1" component="div">
+            {audio.album}
+          </Typography>
+          <AddToPlaylist playlists={playlists} audioId={audio.audioId} />
+        </Box>
         <Typography variant="body2" color="text.secondary">
           Singer: {audio.singerName}
         </Typography>

@@ -5,7 +5,7 @@ import {
   createPlaylist,
   getAllPlaylistsByUser,
   getAudioContentByPlaylistId,
-} from "../controllers/playlist.controller.js";
+} from "../controllers/audio.playlist.controller.js";
 
 const audioPlaylistRoutes = express.Router();
 

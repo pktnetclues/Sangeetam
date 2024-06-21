@@ -42,8 +42,17 @@ const addContentToPlaylist = async (req, res) => {
     let playlist = await AudioPlaylist.findOne({
       where: { userId, playlistName },
     });
+
     if (!playlist) {
       playlist = await AudioPlaylist.create({ userId, playlistName });
+    }
+
+    const isAudioAlreadyinPlaylist = await AudioPlaylist_Content.findOne({
+      where: { audioId: audioId, playlistId: playlist.playlistId },
+    });
+
+    if (isAudioAlreadyinPlaylist) {
+      return res.status(400).json({ message: "Aleady added in this playlist" });
     }
 
     const newContent = await AudioPlaylist_Content.create({
