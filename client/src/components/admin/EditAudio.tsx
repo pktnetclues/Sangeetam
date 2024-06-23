@@ -127,15 +127,8 @@ const EditAudio: React.FC<UploadAudioProps> = ({
 
   return (
     <Box>
-      <Button
-        sx={{
-          my: 2,
-        }}
-        variant="outlined"
-        color="primary"
-        onClick={handleClickDialog}
-      >
-        Edit
+      <Button variant="outlined" color="primary" onClick={handleClickDialog}>
+        Edit Audio
       </Button>
       <Dialog open={open} onClose={handleClickDialog} maxWidth="sm" fullWidth>
         <DialogTitle>
@@ -148,8 +141,7 @@ const EditAudio: React.FC<UploadAudioProps> = ({
               right: 8,
               top: 8,
               color: (theme) => theme.palette.grey[500],
-            }}
-          >
+            }}>
             <CloseIcon />
           </IconButton>
         </DialogTitle>
@@ -160,8 +152,7 @@ const EditAudio: React.FC<UploadAudioProps> = ({
               alignItems: "center",
               margin: "auto",
             }}
-            maxWidth="xs"
-          >
+            maxWidth="xs">
             <form
               name="form"
               style={{
@@ -170,8 +161,7 @@ const EditAudio: React.FC<UploadAudioProps> = ({
                 padding: "20px",
                 boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
               }}
-              onSubmit={handleSubmit(handleFormSubmit)}
-            >
+              onSubmit={handleSubmit(handleFormSubmit)}>
               <TextField
                 id="album"
                 label="Album"
@@ -240,8 +230,7 @@ const EditAudio: React.FC<UploadAudioProps> = ({
               <Typography
                 sx={{
                   mb: 2,
-                }}
-              >
+                }}>
                 Upload Thumbnail Image File(If you want the new)
               </Typography>
 
@@ -250,8 +239,7 @@ const EditAudio: React.FC<UploadAudioProps> = ({
                   variant="contained"
                   color="primary"
                   type="submit"
-                  fullWidth
-                >
+                  fullWidth>
                   Update
                 </Button>
               ) : (

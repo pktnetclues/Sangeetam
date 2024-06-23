@@ -1,4 +1,4 @@
-import { FC, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   Box,
@@ -15,47 +15,52 @@ import ReactPlayer from "react-player/lazy";
 import AddToPlaylist from "./AddToPlaylist";
 import { PauseCircleOutline, PlayCircleOutline } from "@mui/icons-material";
 
+// Define the props type for the AudioCard component
 interface AudioCardProps {
   audio: AudioType;
 }
 
-const AudioCard: FC<AudioCardProps> = ({ audio }) => {
+// Define the AudioCard component
+const AudioCard: React.FC<AudioCardProps> = ({ audio }) => {
+  // State variables
   const [playAudio, setPlayAudio] = useState(false);
   const [audioLoading, setAudioLoading] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
+  // Effect hook to handle audio loading
   useEffect(() => {
     if (playAudio) {
       setAudioLoading(true);
-      setTimeout(() => {
+      const timer = setTimeout(() => {
         setAudioLoading(false);
       }, 2000);
+      return () => clearTimeout(timer);
     }
   }, [playAudio]);
 
-  const handlePlayAudio = () => {
-    setPlayAudio(true);
-  };
-
-  const handlePauseAudio = () => {
-    setPlayAudio(false);
-  };
+  // Event handlers
+  const handlePlayAudio = () => setPlayAudio(true);
+  const handlePauseAudio = () => setPlayAudio(false);
+  const handleMouseEnter = () => setIsHovered(true);
+  const handleMouseLeave = () => setIsHovered(false);
 
   return (
     <Card
       key={audio.audioId}
       elevation={3}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       sx={{
-        width: "19%",
+        width: isHovered ? "280px" : "260px",
         borderRadius: 2,
         overflow: "hidden",
         boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
         transition: "all 0.3s ease-in-out",
         "&:hover": {
           boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
-          transform: "scale(1.01)",
+          transform: "scale(1.02)",
         },
-      }}
-    >
+      }}>
       <Box sx={{ height: 140, position: "relative" }}>
         <Slide direction="up" in mountOnEnter unmountOnExit timeout={400}>
           <img
@@ -80,8 +85,7 @@ const AudioCard: FC<AudioCardProps> = ({ audio }) => {
             padding: "8px",
             borderRadius: "50%",
             transition: "all 0.3s ease-in-out",
-          }}
-        >
+          }}>
           {playAudio ? (
             <PauseCircleOutline fontSize="large" />
           ) : (

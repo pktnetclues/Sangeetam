@@ -5,16 +5,16 @@ import {
   DialogTitle,
   IconButton,
   DialogContent,
-  Container,
   TextField,
   MenuItem,
+  Typography,
 } from "@mui/material";
-import React, { FC, useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import BookmarksIcon from "@mui/icons-material/Bookmarks";
 import { toast } from "sonner";
 import axios, { AxiosError } from "axios";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 
@@ -25,174 +25,167 @@ interface PropsType {
 
 interface FormData {
   playlistName: string;
-  newPlaylistName?: string;
+  newPlaylistName: string;
+}
+
+interface Playlist {
+  playlistId: number;
+  playlistName: string;
 }
 
 const validationSchema = yup.object().shape({
   playlistName: yup.string().required("Please select a playlist"),
   newPlaylistName: yup.string().when("playlistName", {
     is: "new",
-    then: yup.string().required("Please enter a new playlist name"),
+    then: (schema) => schema.required("Please enter a new playlist name"),
+    otherwise: (schema) => schema.notRequired(),
   }),
 });
 
 const AddToPlaylist: FC<PropsType> = ({ contentId, contentType }) => {
   const {
-    register,
+    control,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<FormData>({
     resolver: yupResolver(validationSchema),
+    defaultValues: {
+      playlistName: "",
+      newPlaylistName: "",
+    },
   });
+
   const [open, setOpen] = useState(false);
-  const [playlists, setPlaylists] = useState([
-    { playlistId: 0, playlistName: "" },
-  ]);
-  const [selectedPlaylist, setSelectedPlaylist] = useState("");
+  const [playlists, setPlaylists] = useState<Playlist[]>([]);
+  const watchPlaylistName = watch("playlistName");
 
   useEffect(() => {
     if (open) {
       const getPlaylists = async () => {
         try {
-          const apiUrl =
-            contentType === "audio"
-              ? "/api/get-audio-playlist"
-              : "/api/get-video-playlist";
-          const response = await axios.get(apiUrl, { withCredentials: true });
-          if (response.status === 200) {
-            setPlaylists(response.data);
-          }
+          const apiUrl = `/api/get-${contentType}-playlist`;
+          const response = await axios.get<Playlist[]>(apiUrl, {
+            withCredentials: true,
+          });
+          setPlaylists(response.data);
         } catch (error) {
           console.error(`Error fetching ${contentType} playlists:`, error);
+          toast.error(`Failed to fetch ${contentType} playlists`);
         }
       };
       getPlaylists();
     }
   }, [contentType, open]);
 
-  const handleClickDialog = () => {
-    setOpen((prevOpen) => !prevOpen);
-  };
-
-  const handlePlaylistChange = (e: React.ChangeEvent<{ value: unknown }>) => {
-    setSelectedPlaylist(e.target.value as string);
-  };
-
-  const handleNewPlaylistChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedPlaylist("new");
-  };
+  const handleClickDialog = () => setOpen((prevOpen) => !prevOpen);
 
   const addToPlaylist = async (data: FormData) => {
     try {
-      const apiUrl =
-        contentType === "audio"
-          ? "/api/add-playlist-content-audio"
-          : "/api/add-playlist-content-video";
-      const response = await axios.post(
-        apiUrl,
-        {
-          contentId,
-          playlistName: data.playlistName,
-          newPlaylistName: data.newPlaylistName,
-        },
-        { withCredentials: true }
-      );
+      const apiUrl = `/api/add-playlist-content-${contentType}`;
+      const payload = {
+        contentId,
+        playlistName:
+          data.playlistName === "new"
+            ? data.newPlaylistName
+            : data.playlistName,
+      };
+      const response = await axios.post(apiUrl, payload, {
+        withCredentials: true,
+      });
       if (response.status === 200) {
         toast.success("Added to playlist");
         setOpen(false);
       }
-    } catch (error: any) {
-      handleError(error);
-      setOpen(false);
+    } catch (error) {
+      handleError(error as AxiosError);
     }
   };
 
   const handleError = (error: AxiosError) => {
-    let errorMessage = "An error occurred. Please try again.";
-    if (error.response && error.response.status === 400) {
-      errorMessage = (error.response.data as { message: string }).message;
-    } else if (error.message) {
-      errorMessage = error.message;
-    }
+    const errorMessage =
+      error.response?.data?.message ||
+      error.message ||
+      "An error occurred. Please try again.";
     toast.error(errorMessage);
   };
 
   return (
     <Box
-      sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
-    >
-      <Button
-        variant="text"
-        color="primary"
-        onClick={handleClickDialog}
-        sx={{ mb: 2 }}
-      >
+      sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+      <IconButton onClick={handleClickDialog}>
         <BookmarksIcon />
-      </Button>
+      </IconButton>
+
       <Dialog open={open} onClose={handleClickDialog} maxWidth="xs" fullWidth>
-        <DialogTitle>
-          Add to playlist
+        <DialogTitle
+          sx={{
+            m: 0,
+            p: 2,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}>
+          <Typography variant="h6">Add to Playlist</Typography>
           <IconButton
             aria-label="close"
             onClick={handleClickDialog}
-            sx={{
-              position: "absolute",
-              right: 8,
-              top: 8,
-              color: (theme) => theme.palette.grey[500],
-            }}
-          >
+            sx={{ color: (theme) => theme.palette.grey[500] }}>
             <CloseIcon />
           </IconButton>
         </DialogTitle>
-        <DialogContent>
-          <Container sx={{ padding: "20px" }}>
-            <form onSubmit={handleSubmit(addToPlaylist)}>
-              <TextField
-                id="playlistName"
-                label="Category"
-                select
-                {...register("playlistName")}
-                fullWidth
-                variant="outlined"
-                margin="normal"
-                onChange={handlePlaylistChange}
-                error={!!errors.playlistName}
-                helperText={errors.playlistName?.message}
-              >
-                {playlists.map((playlist) => (
-                  <MenuItem
-                    key={playlist.playlistId}
-                    value={playlist.playlistName}
-                  >
-                    {playlist.playlistName}
-                  </MenuItem>
-                ))}
-                <MenuItem value="new">New Playlist</MenuItem>
-              </TextField>
-              {selectedPlaylist === "new" && (
+        <DialogContent dividers>
+          <form onSubmit={handleSubmit(addToPlaylist)}>
+            <Controller
+              name="playlistName"
+              control={control}
+              render={({ field }) => (
                 <TextField
-                  id="newPlaylistName"
-                  label="New Playlist Name"
-                  {...register("newPlaylistName")}
+                  {...field}
+                  select
                   fullWidth
+                  label="Select Playlist"
                   variant="outlined"
                   margin="normal"
-                  onChange={handleNewPlaylistChange}
-                  error={!!errors.newPlaylistName}
-                  helperText={errors.newPlaylistName?.message}
-                />
+                  error={!!errors.playlistName}
+                  helperText={errors.playlistName?.message}>
+                  {playlists.map((playlist) => (
+                    <MenuItem
+                      key={playlist.playlistId}
+                      value={playlist.playlistName}>
+                      {playlist.playlistName}
+                    </MenuItem>
+                  ))}
+                  <MenuItem value="new">New Playlist</MenuItem>
+                </TextField>
               )}
-              <Button
-                variant="contained"
-                color="primary"
-                type="submit"
-                fullWidth
-              >
-                Add to playlist
-              </Button>
-            </form>
-          </Container>
+            />
+            {watchPlaylistName === "new" && (
+              <Controller
+                name="newPlaylistName"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    label="New Playlist Name"
+                    variant="outlined"
+                    margin="normal"
+                    error={!!errors.newPlaylistName}
+                    helperText={errors.newPlaylistName?.message}
+                  />
+                )}
+              />
+            )}
+            <Button
+              variant="contained"
+              color="primary"
+              type="submit"
+              fullWidth
+              sx={{ mt: 2 }}>
+              Add to Playlist
+            </Button>
+          </form>
         </DialogContent>
       </Dialog>
     </Box>

@@ -10,8 +10,10 @@ import {
   useMediaQuery,
   Typography,
   Divider,
+  Tooltip,
   IconButton,
-  Collapse,
+  Menu,
+  MenuItem,
 } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
 import AudiotrackIcon from "@mui/icons-material/Audiotrack";
@@ -21,12 +23,26 @@ import SubscriptionsIcon from "@mui/icons-material/Subscriptions";
 import axios from "axios";
 import { toast } from "sonner";
 import { HomeRounded } from "@mui/icons-material";
+import QueueIcon from "@mui/icons-material/Queue";
+import MenuIcon from "@mui/icons-material/Menu";
+import React from "react";
 
 const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
+
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   const handleLogout = async () => {
     try {
@@ -42,15 +58,58 @@ const Sidebar = () => {
     }
   };
 
+  const handleNavigation = (path: string) => {
+    navigate(path);
+    handleClose();
+  };
+
   const menuItems = [
-    { label: "Homepage", icon: <HomeRounded />, path: "/user/home" },
+    { label: "Home", icon: <HomeRounded />, path: "/user/home" },
     { label: "Audios", icon: <AudiotrackIcon />, path: "/user/audios" },
     { label: "Videos", icon: <OndemandVideoIcon />, path: "/user/videos" },
     { label: "Playlist", icon: <SubscriptionsIcon />, path: "/user/playlist" },
+    {
+      label: "Upload",
+      icon: <QueueIcon />,
+      path: "/user/upload",
+    },
     { label: "Logout", icon: <ExitToAppIcon />, onClick: handleLogout },
   ];
 
-  if (isSmallScreen) return null;
+  if (isSmallScreen) {
+    return (
+      <>
+        <IconButton
+          edge="start"
+          color="inherit"
+          aria-label="menu"
+          onClick={handleClick}>
+          <MenuIcon />
+        </IconButton>
+        <Menu
+          anchorEl={anchorEl}
+          open={open}
+          onClose={handleClose}
+          anchorOrigin={{
+            vertical: "top",
+            horizontal: "left",
+          }}
+          transformOrigin={{
+            vertical: "top",
+            horizontal: "left",
+          }}>
+          {menuItems.map((item) => (
+            <MenuItem
+              key={item.label}
+              onClick={item.onClick || (() => handleNavigation(item.path))}>
+              <ListItemIcon>{item.icon}</ListItemIcon>
+              <ListItemText primary={item.label} />
+            </MenuItem>
+          ))}
+        </Menu>
+      </>
+    );
+  }
 
   return (
     <Drawer
@@ -66,8 +125,7 @@ const Sidebar = () => {
           padding: "10px",
           overflow: "auto",
         },
-      }}
-    >
+      }}>
       <Box sx={{ padding: "20px" }}>
         <Typography variant="h6" sx={{ textAlign: "center", padding: "10px" }}>
           <IconButton sx={{ marginRight: "10px" }}>
@@ -78,10 +136,10 @@ const Sidebar = () => {
         <Divider sx={{ marginBottom: "20px" }} />
         <List sx={{ mt: "10px" }}>
           {menuItems.map((item) => (
-            <Collapse key={item.label} in={true} timeout={500}>
+            <Tooltip key={item.label} title={item.label} placement="right">
               <ListItem disablePadding>
                 <ListItemButton
-                  onClick={item.onClick || (() => navigate(item.path))}
+                  onClick={item.onClick || (() => handleNavigation(item.path))}
                   selected={item.path ? location.pathname === item.path : false}
                   sx={{
                     backgroundColor: theme.palette.background.paper,
@@ -98,13 +156,12 @@ const Sidebar = () => {
                       backgroundColor: theme.palette.background.default,
                       borderLeft: "2px solid " + theme.palette.primary.main,
                     },
-                  }}
-                >
+                  }}>
                   <ListItemIcon sx={{ minWidth: 40 }}>{item.icon}</ListItemIcon>
                   <ListItemText primary={item.label} sx={{ fontSize: 16 }} />
                 </ListItemButton>
               </ListItem>
-            </Collapse>
+            </Tooltip>
           ))}
         </List>
       </Box>

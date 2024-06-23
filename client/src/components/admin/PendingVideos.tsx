@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
-  Grid,
   Box,
   Button,
   Card,
@@ -8,9 +7,9 @@ import {
   CardContent,
   CardMedia,
   Typography,
+  Alert,
 } from "@mui/material";
 import axios from "axios";
-import VideoCard from "../common/VideoCard";
 import AddToPlaylist from "../common/AddToPlaylist";
 import { TimeAgo } from "../common/Timeago";
 import ApproveContent from "./ApproveContent";
@@ -47,26 +46,26 @@ const PendingVideos: React.FC = () => {
 
   return (
     <div style={{ marginLeft: 250, padding: 20 }}>
+      <Typography variant="h5" sx={{ padding: 1 }}>
+        Pending Videos
+      </Typography>
       <Box
         sx={{
           display: "flex",
           flexWrap: "wrap",
           gap: "10px",
           width: "100%",
-        }}
-      >
+        }}>
         {videos.length > 0 ? (
           videos.map((video) => (
             <Card
-              sx={{ width: "22%", position: "relative", overflow: "hidden" }}
-            >
+              sx={{ width: "22%", position: "relative", overflow: "hidden" }}>
               <CardActionArea sx={{ height: 200 }}>
                 <div
                   style={{
                     position: "relative",
                     paddingTop: "56.25%",
-                  }}
-                >
+                  }}>
                   {!loadVideo ? (
                     <>
                       <CardMedia
@@ -90,8 +89,7 @@ const PendingVideos: React.FC = () => {
                           transform: "translate(-50%, -50%)",
                           backgroundColor: "rgba(0,0,0,0.6)",
                           color: "white",
-                        }}
-                      >
+                        }}>
                         Play Video
                       </Button>
                     </>
@@ -101,8 +99,7 @@ const PendingVideos: React.FC = () => {
                       width="100%"
                       height="100%"
                       controls
-                      style={{ position: "absolute", top: 0, left: 0 }}
-                    >
+                      style={{ position: "absolute", top: 0, left: 0 }}>
                       <source
                         src={`http://localhost:4000/assets/videos/${video.videoUrl}`}
                         type="video/mp4"
@@ -117,8 +114,7 @@ const PendingVideos: React.FC = () => {
                   sx={{
                     display: "flex",
                     justifyContent: "space-between",
-                  }}
-                >
+                  }}>
                   <Typography gutterBottom variant="subtitle1" component="div">
                     {video.title}
                   </Typography>
@@ -148,7 +144,7 @@ const PendingVideos: React.FC = () => {
             </Card>
           ))
         ) : (
-          <Typography>No Pending Videos</Typography>
+          <Alert severity="info">No pending videos found.</Alert>
         )}
       </Box>
     </div>

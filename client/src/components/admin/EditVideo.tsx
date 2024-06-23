@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
@@ -21,7 +21,7 @@ import CloseIcon from "@mui/icons-material/Close";
 
 const validationSchema = yup.object().shape({
   title: yup.string().required("Title is required"),
-  categoryId: yup.string().required("Category is required"),
+  categoryId: yup.number().required("Category is required"),
   media: yup
     .mixed()
     .notRequired()
@@ -61,24 +61,20 @@ const EditVideo: React.FC<UploadVideoProps> = ({
   const [categories, setCategories] = useState([]);
   const [open, setOpen] = useState(false);
 
-  useEffect(() => {
-    getCategories();
-  }, []);
-
-  const getCategories = async () => {
-    try {
-      const response = await axios.get("/api/categories", {
-        withCredentials: true,
-      });
-      if (response.status === 200) {
-        setCategories(response.data);
+  const handleClickDialog = async () => {
+    if (!open) {
+      try {
+        const response = await axios.get("/api/categories", {
+          withCredentials: true,
+        });
+        if (response.status === 200) {
+          setCategories(response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+        toast.error("Failed to fetch categories");
       }
-    } catch (error) {
-      console.error("Error fetching categories:", error);
     }
-  };
-
-  const handleClickDialog = () => {
     setOpen(!open);
   };
 
@@ -86,26 +82,14 @@ const EditVideo: React.FC<UploadVideoProps> = ({
     register,
     handleSubmit,
     reset,
-    setValue,
     formState: { errors },
   } = useForm({
     defaultValues: {
       title: videoDetails.title,
-      categoryId: videoDetails.categoryId,
+      categoryId: videoDetails.Category.categoryId,
     },
     resolver: yupResolver(validationSchema),
   });
-
-  useEffect(() => {
-    if (videoDetails && categories.length > 0) {
-      const category = categories.find(
-        (cat) => cat.id === videoDetails.categoryId
-      );
-      if (category) {
-        setValue("categoryId", category.id);
-      }
-    }
-  }, [videoDetails, categories, setValue]);
 
   const handleFormSubmit = async (data: any) => {
     const formData = new FormData();
@@ -118,6 +102,8 @@ const EditVideo: React.FC<UploadVideoProps> = ({
     if (thumbnailFile) {
       formData.append("thumbnail", thumbnailFile[0]);
     }
+
+    console.log(data.categoryId);
 
     setLoading(true);
     try {
@@ -155,15 +141,8 @@ const EditVideo: React.FC<UploadVideoProps> = ({
 
   return (
     <Box>
-      <Button
-        sx={{
-          my: 2,
-        }}
-        variant="outlined"
-        color="primary"
-        onClick={handleClickDialog}
-      >
-        Edit
+      <Button variant="outlined" color="primary" onClick={handleClickDialog}>
+        Edit Video
       </Button>
       <Dialog open={open} onClose={handleClickDialog} maxWidth="sm" fullWidth>
         <DialogTitle>
@@ -176,8 +155,7 @@ const EditVideo: React.FC<UploadVideoProps> = ({
               right: 8,
               top: 8,
               color: (theme) => theme.palette.grey[500],
-            }}
-          >
+            }}>
             <CloseIcon />
           </IconButton>
         </DialogTitle>
@@ -188,8 +166,7 @@ const EditVideo: React.FC<UploadVideoProps> = ({
               alignItems: "center",
               margin: "auto",
             }}
-            maxWidth="xs"
-          >
+            maxWidth="xs">
             <form
               name="form"
               style={{
@@ -198,8 +175,7 @@ const EditVideo: React.FC<UploadVideoProps> = ({
                 padding: "20px",
                 boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
               }}
-              onSubmit={handleSubmit(handleFormSubmit)}
-            >
+              onSubmit={handleSubmit(handleFormSubmit)}>
               <TextField
                 id="title"
                 label="Title"
@@ -220,13 +196,11 @@ const EditVideo: React.FC<UploadVideoProps> = ({
                 {...register("categoryId")}
                 fullWidth
                 variant="outlined"
-                margin="normal"
-              >
+                margin="normal">
                 {categories.map((category: any) => (
                   <MenuItem
                     key={category.categoryId}
-                    value={category.categoryId}
-                  >
+                    value={category.categoryId}>
                     {category.categoryName}
                   </MenuItem>
                 ))}
@@ -267,8 +241,7 @@ const EditVideo: React.FC<UploadVideoProps> = ({
               <Typography
                 sx={{
                   mb: 2,
-                }}
-              >
+                }}>
                 Upload Thumbnail Image File (If you want the new)
               </Typography>
 
@@ -277,8 +250,7 @@ const EditVideo: React.FC<UploadVideoProps> = ({
                   variant="contained"
                   color="primary"
                   type="submit"
-                  fullWidth
-                >
+                  fullWidth>
                   Update
                 </Button>
               ) : (

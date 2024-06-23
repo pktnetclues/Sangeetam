@@ -9,65 +9,128 @@ import {
   DialogContent,
   Typography,
   Box,
-  Divider,
+  Paper,
+  Container,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import AudiotrackIcon from "@mui/icons-material/Audiotrack";
+import VideocamIcon from "@mui/icons-material/Videocam";
+import { useLocation } from "react-router-dom";
 
-const RequestContentUpload = () => {
+const RequestContentUpload: React.FC = () => {
   const [audioDialogOpen, setAudioDialogOpen] = useState(false);
   const [videoDialogOpen, setVideoDialogOpen] = useState(false);
 
-  const handleAudioDialog = () => {
-    setAudioDialogOpen((prevOpen) => !prevOpen);
-  };
+  const handleAudioDialog = () => setAudioDialogOpen((prev) => !prev);
+  const handleVideoDialog = () => setVideoDialogOpen((prev) => !prev);
 
-  const handleVideoDialog = () => {
-    setVideoDialogOpen((prevOpen) => !prevOpen);
-  };
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  const location = useLocation();
+  const { pathname } = location;
+  console.log(pathname);
 
   return (
-    <Box sx={{ mt: 2, px: 2 }}>
-      <Divider />
-      <Typography variant="h5" mt={2} gutterBottom>
-        Request Content Upload
-      </Typography>
-      <Box sx={{ display: "flex", gap: "10px", mt: 2 }}>
-        <ButtonWithDialog
-          title="Request to Upload new Audio"
-          showDialog={handleAudioDialog}
-          dialogOpen={audioDialogOpen}
-          dialogContent={<UploadAudio closeDialog={handleAudioDialog} />}
-        />
-        <ButtonWithDialog
-          title="Request to Upload new Video"
-          showDialog={handleVideoDialog}
-          dialogOpen={videoDialogOpen}
-          dialogContent={<UploadVideo closeDialog={handleVideoDialog} />}
-        />
-      </Box>
-    </Box>
+    <Container
+      maxWidth="md"
+      sx={{
+        minHeight: "100lvh",
+        display: "flex",
+        alignItems: "center",
+      }}>
+      <Paper elevation={3} sx={{ p: 4, borderRadius: 2, width: "100%" }}>
+        <Typography
+          variant="h4"
+          gutterBottom
+          fontWeight="bold"
+          color="primary"
+          textAlign="center">
+          {pathname === "/admin/upload"
+            ? "Upload New Content"
+            : "Request Content Upload"}
+        </Typography>
+        <Typography
+          variant="body1"
+          paragraph
+          color="text.secondary"
+          textAlign="center">
+          {pathname === "/admin/upload"
+            ? "Share your music, podcasts, or audio stories"
+            : "Request to share your music, podcasts, or audio stories"}
+        </Typography>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: isMobile ? "column" : "row",
+            gap: 3,
+            mt: 4,
+          }}>
+          <ButtonWithDialog
+            title="Upload New Audio"
+            caption="Share your music, podcasts, or audio stories"
+            icon={<AudiotrackIcon />}
+            showDialog={handleAudioDialog}
+            dialogOpen={audioDialogOpen}
+            dialogContent={<UploadAudio closeDialog={handleAudioDialog} />}
+          />
+          <ButtonWithDialog
+            title="Upload New Video"
+            caption="Share your films, vlogs, or video content"
+            icon={<VideocamIcon />}
+            showDialog={handleVideoDialog}
+            dialogOpen={videoDialogOpen}
+            dialogContent={<UploadVideo closeDialog={handleVideoDialog} />}
+          />
+        </Box>
+      </Paper>
+    </Container>
   );
 };
 
-const ButtonWithDialog = ({
+interface ButtonWithDialogProps {
+  title: string;
+  caption: string;
+  icon: React.ReactNode;
+  showDialog: () => void;
+  dialogOpen: boolean;
+  dialogContent: React.ReactNode;
+}
+
+const ButtonWithDialog: React.FC<ButtonWithDialogProps> = ({
   title,
+  caption,
+  icon,
   showDialog,
   dialogOpen,
   dialogContent,
-  children,
 }) => {
   return (
-    <Box>
+    <Box sx={{ flex: 1 }}>
       <Button
-        sx={{ my: 2 }}
         variant="outlined"
         color="primary"
         onClick={showDialog}
-      >
-        {title}
+        startIcon={icon}
+        sx={{
+          p: 3,
+          width: "100%",
+          height: "100%",
+          flexDirection: "column",
+          alignItems: "flex-start",
+          textAlign: "left",
+        }}>
+        <Typography variant="h6" fontWeight="bold" gutterBottom>
+          {title}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          {caption}
+        </Typography>
       </Button>
       <Dialog open={dialogOpen} onClose={showDialog} maxWidth="sm" fullWidth>
-        <DialogTitle>
+        <DialogTitle sx={{ m: 0, p: 2 }}>
           {title}
           <IconButton
             aria-label="close"
@@ -77,12 +140,11 @@ const ButtonWithDialog = ({
               right: 8,
               top: 8,
               color: (theme) => theme.palette.grey[500],
-            }}
-          >
+            }}>
             <CloseIcon />
           </IconButton>
         </DialogTitle>
-        <DialogContent>{dialogContent}</DialogContent>
+        <DialogContent dividers>{dialogContent}</DialogContent>
       </Dialog>
     </Box>
   );

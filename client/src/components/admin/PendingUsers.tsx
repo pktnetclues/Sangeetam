@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { UserType } from "../../types";
 import axios from "axios";
 import {
+  Alert,
   Button,
   CircularProgress,
   Dialog,
@@ -23,11 +24,79 @@ import DoneAllIcon from "@mui/icons-material/DoneAll";
 import CloseIcon from "@mui/icons-material/Close";
 import { toast } from "sonner";
 
+// Custom hook to handle loading state
+const useLoading = () => {
+  const [loading, setLoading] = useState(false);
+
+  const startLoading = () => setLoading(true);
+  const stopLoading = () => setLoading(false);
+
+  return { loading, startLoading, stopLoading };
+};
+
+// Dialog component
+const ActionDialog = ({
+  open,
+  handleClose,
+  action,
+  userEmail,
+  handleAction,
+}: {
+  open: boolean;
+  handleClose: () => void;
+  action: "approve" | "reject";
+  userEmail: string;
+  handleAction: (email: string, action: "approve" | "reject") => Promise<void>;
+}) => {
+  const { loading, startLoading, stopLoading } = useLoading();
+
+  const handleActionClick = async () => {
+    startLoading();
+    await handleAction(userEmail, action);
+    stopLoading();
+  };
+
+  return (
+    <Dialog open={open} onClose={handleClose}>
+      <DialogTitle id="alert-dialog-title">
+        {action === "approve" ? "Approve" : "Reject"} User Registration
+      </DialogTitle>
+      <DialogContent>
+        <DialogContentText id="alert-dialog-description">
+          Are you sure you want to {action} the user?
+          {action === "reject" &&
+            " once done user will be removed from database"}
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button disabled={loading} onClick={handleClose}>
+          Cancel
+        </Button>
+        <Button
+          variant="contained"
+          onClick={handleActionClick}
+          autoFocus
+          disabled={loading}>
+          {loading ? (
+            <CircularProgress size={24} />
+          ) : action === "approve" ? (
+            "Approve"
+          ) : (
+            "Reject"
+          )}
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
 const PendingUsers = () => {
   const [users, setUsers] = useState<UserType[]>([]);
-  const [open, setOpen] = useState<boolean>(false);
-  const [approveOpen, setApproveOpen] = useState<boolean>(false);
-  const [loading, setLoading] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const [dialogAction, setDialogAction] = useState<"approve" | "reject">(
+    "approve",
+  );
+  const [selectedUserEmail, setSelectedUserEmail] = useState<string>("");
 
   useEffect(() => {
     getUsers();
@@ -44,9 +113,11 @@ const PendingUsers = () => {
     } catch (error) {}
   };
 
-  const approveOrReject = async (email: string, action: string) => {
+  const handleUserAction = async (
+    email: string,
+    action: "approve" | "reject",
+  ) => {
     try {
-      setLoading(true);
       const response = await axios.post(
         "/api/approve-user",
         {
@@ -55,45 +126,34 @@ const PendingUsers = () => {
         },
         {
           withCredentials: true,
-        }
+        },
       );
       if (response.status === 200) {
-        setLoading(false);
         toast.success(response.data.message);
         getUsers();
-        open ? handleDialog() : handleApproveDialog();
+        handleDialogClose();
       }
-    } catch (error) {
-      setLoading(false);
-    }
+    } catch (error) {}
   };
 
-  const handleDialog = () => {
-    setOpen(!open);
+  const handleDialogOpen = (action: "approve" | "reject", email: string) => {
+    setDialogAction(action);
+    setSelectedUserEmail(email);
+    setDialogOpen(true);
   };
 
-  const handleApproveDialog = () => {
-    setApproveOpen(!approveOpen);
+  const handleDialogClose = () => {
+    setDialogOpen(false);
   };
 
   return (
-    <div
-      style={{
-        marginLeft: 250,
-        padding: 20,
-      }}
-    >
+    <div style={{ marginLeft: 250, padding: 20 }}>
+      <Typography variant="h5" sx={{ padding: 1 }}>
+        Pending Users
+      </Typography>
       {users.length > 0 ? (
         <>
-          <div>
-            <Typography
-              sx={{
-                padding: 1,
-              }}
-            >
-              Pending Users
-            </Typography>
-          </div>
+          <Typography sx={{ padding: 1 }}>Pending Users</Typography>
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
               <TableHead>
@@ -107,8 +167,7 @@ const PendingUsers = () => {
                 {users.map((user) => (
                   <TableRow
                     key={user.userId}
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                  >
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
                     <TableCell component="th" scope="row">
                       {user.name}
                     </TableCell>
@@ -118,106 +177,33 @@ const PendingUsers = () => {
                         direction="row"
                         spacing={2}
                         alignItems="center"
-                        justifyContent="end"
-                      >
-                        <>
-                          <Button onClick={handleDialog}>
-                            <Typography
-                              sx={{
-                                display: "flex",
-                                alignItems: "center",
-                                color: "red",
-                              }}
-                            >
-                              Reject <CloseIcon />
-                            </Typography>
-                          </Button>
-                          <Dialog
-                            open={open}
-                            onClose={handleDialog}
-                            aria-labelledby="alert-dialog-title"
-                            aria-describedby="alert-dialog-description"
-                          >
-                            <DialogTitle id="alert-dialog-title">
-                              Reject User Registration
-                            </DialogTitle>
-                            <DialogContent>
-                              <DialogContentText id="alert-dialog-description">
-                                Are you sure you want to reject the user. once
-                                done user will be removed from database
-                              </DialogContentText>
-                            </DialogContent>
-                            <DialogActions>
-                              <Button disabled={loading} onClick={handleDialog}>
-                                Cancel
-                              </Button>
-                              <Button
-                                variant="contained"
-                                onClick={() =>
-                                  approveOrReject(user.email, "reject")
-                                }
-                                autoFocus
-                                disabled={loading}
-                              >
-                                {loading ? (
-                                  <CircularProgress size={24} />
-                                ) : (
-                                  "Reject"
-                                )}
-                              </Button>
-                            </DialogActions>
-                          </Dialog>
-                        </>
-                        <>
-                          <Button onClick={handleApproveDialog}>
-                            <Typography
-                              sx={{
-                                display: "flex",
-                                alignItems: "center",
-                                color: "green",
-                              }}
-                            >
-                              Approve <DoneAllIcon />
-                            </Typography>
-                          </Button>
-                          <Dialog
-                            open={approveOpen}
-                            onClose={handleApproveDialog}
-                            aria-labelledby="alert-dialog-title"
-                            aria-describedby="alert-dialog-description"
-                          >
-                            <DialogTitle id="alert-dialog-title">
-                              Approve User Registration
-                            </DialogTitle>
-                            <DialogContent>
-                              <DialogContentText id="alert-dialog-description">
-                                Are you sure you want to approve the user.
-                              </DialogContentText>
-                            </DialogContent>
-                            <DialogActions>
-                              <Button
-                                disabled={loading}
-                                onClick={handleApproveDialog}
-                              >
-                                Cancel
-                              </Button>
-                              <Button
-                                variant="contained"
-                                onClick={() =>
-                                  approveOrReject(user.email, "approve")
-                                }
-                                autoFocus
-                                disabled={loading}
-                              >
-                                {loading ? (
-                                  <CircularProgress size={24} />
-                                ) : (
-                                  "Approve"
-                                )}
-                              </Button>
-                            </DialogActions>
-                          </Dialog>
-                        </>
+                        justifyContent="end">
+                        <Button
+                          onClick={() =>
+                            handleDialogOpen("reject", user.email)
+                          }>
+                          <Typography
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              color: "red",
+                            }}>
+                            Reject <CloseIcon />
+                          </Typography>
+                        </Button>
+                        <Button
+                          onClick={() =>
+                            handleDialogOpen("approve", user.email)
+                          }>
+                          <Typography
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              color: "green",
+                            }}>
+                            Approve <DoneAllIcon />
+                          </Typography>
+                        </Button>
                       </Stack>
                     </TableCell>
                   </TableRow>
@@ -225,9 +211,16 @@ const PendingUsers = () => {
               </TableBody>
             </Table>
           </TableContainer>
+          <ActionDialog
+            open={dialogOpen}
+            handleClose={handleDialogClose}
+            action={dialogAction}
+            userEmail={selectedUserEmail}
+            handleAction={handleUserAction}
+          />
         </>
       ) : (
-        <Typography>Not any pending users</Typography>
+        <Alert severity="info">No pending users found.</Alert>
       )}
     </div>
   );

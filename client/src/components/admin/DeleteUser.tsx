@@ -10,7 +10,15 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
 import { toast } from "sonner";
 
-const DeleteUser: React.FC = ({ user, getUsers }) => {
+interface Props {
+  user: {
+    name: string;
+    email: string;
+  };
+  getUsers: () => void;
+}
+
+const DeleteUser: React.FC<Props> = ({ user, getUsers }) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -25,7 +33,7 @@ const DeleteUser: React.FC = ({ user, getUsers }) => {
         },
         {
           withCredentials: true,
-        }
+        },
       );
 
       if (response.status === 200) {
@@ -52,8 +60,7 @@ const DeleteUser: React.FC = ({ user, getUsers }) => {
         open={open}
         onClose={handleDialog}
         aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
+        aria-describedby="alert-dialog-description">
         <DialogTitle id="alert-dialog-title">
           Are you sure you want to delete this user
         </DialogTitle>
@@ -66,8 +73,7 @@ const DeleteUser: React.FC = ({ user, getUsers }) => {
             onClick={() => handleDelete()}
             disabled={loading}
             variant="contained"
-            autoFocus
-          >
+            autoFocus>
             {loading ? <CircularProgress size={24} /> : "Delete anyway"}
           </Button>
         </DialogActions>

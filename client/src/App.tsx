@@ -6,6 +6,8 @@ import { Toaster } from "sonner";
 import { ContextProvider } from "./context/Context";
 import { ConfirmProvider } from "material-ui-confirm";
 import LoaderIcon from "./components/common/Loader";
+import RequestContentUpload from "./components/user/RequestContentUpload";
+import VideoPlayer from "./components/common/VideoPlayer";
 
 const AdminRoutes = lazy(() => import("./components/admin/AdminRoutes"));
 const UserRoutes = lazy(() => import("./components/user/UserRoutes"));
@@ -20,10 +22,10 @@ const PendingVideos = lazy(() => import("./components/admin/PendingVideos"));
 const PendingAudios = lazy(() => import("./components/admin/PendingAudio"));
 const Playlist = lazy(() => import("./components/user/Playlist"));
 const AudioPlaylistDetail = lazy(
-  () => import("./components/user/AudioPlaylistDetail")
+  () => import("./components/user/AudioPlaylistDetail"),
 );
 const VideoPlaylistDetail = lazy(
-  () => import("./components/user/VideoPlaylistDetail")
+  () => import("./components/user/VideoPlaylistDetail"),
 );
 const Login = lazy(() => import("./components/auth/Login"));
 const Register = lazy(() => import("./components/auth/Register"));
@@ -57,12 +59,18 @@ function App() {
                   path="/admin/pending-audios"
                   element={<PendingAudios />}
                 />
+                <Route
+                  path="/admin/upload"
+                  element={<RequestContentUpload />}
+                />
               </Route>
               <Route element={<UserRoutes />}>
                 <Route path="/user/home" element={<Homepage />} />
                 <Route path="/user/audios" element={<AllAudios />} />
                 <Route path="/user/videos" element={<AllVideos />} />
+                <Route path="/user/video/:videoId" element={<VideoPlayer />} />
                 <Route path="/user/playlist" element={<Playlist />} />
+                <Route path="/user/upload" element={<RequestContentUpload />} />
                 <Route
                   path="/user/playlist/audio/:playlistId"
                   element={<AudioPlaylistDetail />}

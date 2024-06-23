@@ -9,7 +9,15 @@ import React, { useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
 
-const UpdateUserStatus: React.FC = ({ user, getUsers }) => {
+interface Props {
+  user: {
+    email: string;
+    status: boolean;
+  };
+  getUsers: () => void;
+}
+
+const UpdateUserStatus: React.FC<Props> = ({ user, getUsers }) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -23,7 +31,7 @@ const UpdateUserStatus: React.FC = ({ user, getUsers }) => {
         },
         {
           withCredentials: true,
-        }
+        },
       );
 
       if (response.status === 200) {
@@ -50,8 +58,7 @@ const UpdateUserStatus: React.FC = ({ user, getUsers }) => {
         open={open}
         onClose={handleDialog}
         aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
+        aria-describedby="alert-dialog-description">
         <DialogTitle id="alert-dialog-title">
           Are you sure you want to make this user{" "}
           {user.status ? "Inactive" : "Active"}
@@ -65,8 +72,7 @@ const UpdateUserStatus: React.FC = ({ user, getUsers }) => {
             onClick={() => handleChangeStatus()}
             disabled={loading}
             variant="contained"
-            autoFocus
-          >
+            autoFocus>
             {loading ? (
               <CircularProgress size={24} />
             ) : user.status ? (

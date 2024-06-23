@@ -23,6 +23,7 @@ import QuizIcon from "@mui/icons-material/Quiz";
 import MusicOffIcon from "@mui/icons-material/MusicOff";
 import axios from "axios";
 import { toast } from "sonner";
+import QueueIcon from "@mui/icons-material/Queue";
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -63,6 +64,11 @@ const Sidebar = () => {
       icon: <QuizIcon />,
       path: "/admin/pending-videos",
     },
+    {
+      label: "Upload",
+      icon: <QueueIcon />,
+      path: "/admin/upload",
+    },
     { label: "Logout", icon: <ExitToAppIcon />, onClick: handleLogout },
   ];
 
@@ -82,8 +88,7 @@ const Sidebar = () => {
           borderRadius: "0 10px 10px 0",
           boxShadow: theme.shadows[5],
         },
-      }}
-    >
+      }}>
       <Box sx={{ overflow: "auto", padding: "10px" }}>
         <Typography
           sx={{
@@ -91,8 +96,7 @@ const Sidebar = () => {
             fontSize: "1.2rem",
             fontWeight: "bold",
             color: theme.palette.primary,
-          }}
-        >
+          }}>
           <IconButton>
             <img src="/logo.png" height={40} width={40} />
           </IconButton>
@@ -121,8 +125,7 @@ const Sidebar = () => {
                   "&:hover": {
                     backgroundColor: alpha(theme.palette.primary.main, 0.1),
                   },
-                }}
-              >
+                }}>
                 <ListItemIcon sx={{ color: theme.palette.primary }}>
                   {item.icon}
                 </ListItemIcon>

@@ -16,7 +16,7 @@ const VideoPlaylistDetail = () => {
           `/api/get-playlist-videos/${playlistId}`,
           {
             withCredentials: true,
-          }
+          },
         );
         if (response.status === 200) {
           setVideos(response.data);
@@ -36,11 +36,10 @@ const VideoPlaylistDetail = () => {
           flexWrap: "wrap",
           gap: "10px",
           width: "100%",
-        }}
-      >
+        }}>
         {videos.length > 0 ? (
           videos.map((video) => (
-            <VideoCard key={video.videoId} video={video.video} />
+            <VideoCard key={video.video.videoId} video={video.video} />
           ))
         ) : (
           <Typography>No Item in Playlist</Typography>

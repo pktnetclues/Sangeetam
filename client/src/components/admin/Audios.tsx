@@ -1,28 +1,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import {
-  Box,
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  Grid,
-  IconButton,
-  Typography,
-} from "@mui/material";
+import { Box } from "@mui/material";
 import { AudioType } from "../../types";
-import UploadAudio from "../common/UploadAudio";
-import CloseIcon from "@mui/icons-material/Close";
 import DeleteAudio from "./DeleteAudio";
-import ReactPlayer from "react-player/lazy";
 import EditAudio from "./EditAudio";
+import AudioCard from "../common/AudioCard";
 
 const Audios: React.FC = () => {
   const [audios, setAudios] = useState<AudioType[]>([]);
-  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     getAudios();
@@ -41,97 +26,32 @@ const Audios: React.FC = () => {
     }
   };
 
-  const handleClickDialog = () => {
-    setOpen(!open);
-  };
-
   return (
     <div style={{ marginLeft: 250, padding: 20 }}>
-      <Button
-        sx={{
-          my: 2,
-        }}
-        variant="outlined"
-        color="primary"
-        onClick={handleClickDialog}
-      >
-        Upload new Audio
-      </Button>
-      <Dialog open={open} onClose={handleClickDialog} maxWidth="sm" fullWidth>
-        <DialogTitle>
-          Upload Audio
-          <IconButton
-            aria-label="close"
-            onClick={handleClickDialog}
-            sx={{
-              position: "absolute",
-              right: 8,
-              top: 8,
-              color: (theme) => theme.palette.grey[500],
-            }}
-          >
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent>
-          <UploadAudio closeDialog={handleClickDialog} callAudios={getAudios} />
-        </DialogContent>
-      </Dialog>
-      <Grid container spacing={3}>
+      <h2>All Audios</h2>
+      <Box
+        sx={{ display: "flex", flexWrap: "wrap", gap: "10px", width: "100%" }}>
         {audios.map((audio) => (
-          <Grid item xs={12} sm={6} md={4} lg={3} key={audio.audioId}>
-            <Card
-              elevation={3}
+          <Box
+            key={audio.audioId}
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "10px",
+            }}>
+            <AudioCard audio={audio} />
+            <Box
               sx={{
                 display: "flex",
-                flexDirection: "column",
                 justifyContent: "space-between",
-                height: "100%",
-              }}
-            >
-              <Box sx={{ height: 140 }}>
-                <img
-                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                  src={`http://localhost:4000/assets/thumbnails/${audio.thumbnail}`}
-                  alt={audio.album}
-                />
-              </Box>
-              <CardContent>
-                <Typography gutterBottom variant="h6" component="div">
-                  {audio.album}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Singer: {audio.singerName}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Writer: {audio.writerName}
-                </Typography>
-              </CardContent>
-              <CardActions
-                sx={{ flexDirection: "column", alignItems: "stretch" }}
-              >
-                <ReactPlayer
-                  height="30px"
-                  width="100%"
-                  controls
-                  url={`http://localhost:4000/assets/audios/${audio.audioUrl}`}
-                />
-
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    width: "100%",
-                  }}
-                >
-                  <DeleteAudio audioId={audio.audioId} getAudios={getAudios} />
-                  <EditAudio audioDetails={audio} callAudios={getAudios} />
-                </Box>
-              </CardActions>
-            </Card>
-          </Grid>
+                width: "100%",
+              }}>
+              <EditAudio audioDetails={audio} callAudios={getAudios} />
+              <DeleteAudio audioId={audio.audioId} getAudios={getAudios} />
+            </Box>
+          </Box>
         ))}
-      </Grid>
+      </Box>
     </div>
   );
 };

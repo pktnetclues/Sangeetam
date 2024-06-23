@@ -5,7 +5,6 @@ import {
   CardMedia,
   CardContent,
   Typography,
-  Button,
   Box,
   Slide,
   IconButton,
@@ -13,6 +12,7 @@ import {
 import { TimeAgo } from "./Timeago";
 import AddToPlaylist from "./AddToPlaylist";
 import { PauseCircleOutline, PlayCircleOutline } from "@mui/icons-material";
+import { Link } from "react-router-dom";
 
 interface VideoCardProps {
   video: {
@@ -22,7 +22,7 @@ interface VideoCardProps {
     thumbnail: string;
     videoUrl: string;
     CreatedBy: string;
-    category: { categoryName: string };
+    Category: { categoryName: string };
     user: { name: string };
   };
 }
@@ -40,17 +40,10 @@ const VideoCard: FC<VideoCardProps> = ({ video }) => {
     }
   };
 
-  const handlePauseVideo = () => {
-    if (videoRef.current) {
-      videoRef.current.pause();
-      setPlayVideo(false);
-    }
-  };
-
   return (
     <Card
       sx={{
-        width: "19%",
+        width: "270px",
         borderRadius: "12px",
         boxShadow: "0px 2px 4px rgba(0,0,0,0.1)",
         transition: "all 0.3s ease-in-out",
@@ -58,8 +51,7 @@ const VideoCard: FC<VideoCardProps> = ({ video }) => {
           transform: "scale(1.05)",
           boxShadow: "0px 4px 8px rgba(0,0,0,0.2)",
         },
-      }}
-    >
+      }}>
       <CardActionArea
         sx={{
           height: "150px",
@@ -67,8 +59,7 @@ const VideoCard: FC<VideoCardProps> = ({ video }) => {
           margin: 0,
           borderRadius: "12px 12px 0 0",
           overflow: "hidden",
-        }}
-      >
+        }}>
         <Box
           sx={{
             position: "relative",
@@ -77,16 +68,14 @@ const VideoCard: FC<VideoCardProps> = ({ video }) => {
             padding: 0,
             height: "150px",
             width: "100%",
-          }}
-        >
+          }}>
           {!loadVideo ? (
             <Slide
               direction="down"
               in={!loadVideo}
               mountOnEnter
               unmountOnExit
-              timeout={400}
-            >
+              timeout={400}>
               <CardMedia
                 component="img"
                 height="150%"
@@ -119,8 +108,7 @@ const VideoCard: FC<VideoCardProps> = ({ video }) => {
                 margin: 0,
                 height: "150px",
                 borderRadius: "12px 12px 0 0",
-              }}
-            >
+              }}>
               <source
                 src={`http://localhost:4000/assets/videos/${video.videoUrl}`}
                 type="video/mp4"
@@ -141,8 +129,10 @@ const VideoCard: FC<VideoCardProps> = ({ video }) => {
                 padding: "8px",
                 borderRadius: "50%",
                 transition: "all 0.3s ease-in-out",
-              }}
-            >
+                ":hover": {
+                  backgroundColor: "rgba(0,0,0,0.8)",
+                },
+              }}>
               {playVideo ? (
                 <PauseCircleOutline fontSize="large" />
               ) : (
@@ -158,28 +148,33 @@ const VideoCard: FC<VideoCardProps> = ({ video }) => {
           "&:last-child": {
             paddingBottom: "16px",
           },
-        }}
-      >
+        }}>
         <Box
           sx={{
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-          }}
-        >
-          <Typography
-            gutterBottom
-            variant="subtitle1"
-            component="div"
-            sx={{ fontWeight: "bold", fontSize: "18px" }}
-          >
-            {video.title}
-          </Typography>
-          <AddToPlaylist
-            contentId={video.videoId}
-            contentType="video"
-            sx={{ marginLeft: "16px" }}
-          />
+          }}>
+          <Link
+            to={`/user/video/${video.videoId}`}
+            state={{
+              videoUrl: `http://localhost:4000/assets/videos/${video.videoUrl}`,
+              title: video.title,
+              createdBy: video.user.name,
+              category: video.Category.categoryName,
+              createdAt: video.createdAt,
+              views: 0,
+            }}
+            style={{ textDecoration: "none" }}>
+            <Typography
+              gutterBottom
+              variant="subtitle1"
+              component="div"
+              sx={{ fontWeight: "bold", fontSize: "18px" }}>
+              {video.title}
+            </Typography>
+          </Link>
+          <AddToPlaylist contentId={video.videoId} contentType="video" />
         </Box>
         <Typography variant="body2" color="text.secondary">
           Category: {video.Category.categoryName}

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Button, CircularProgress } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
 import { toast } from "sonner";
 import { useConfirm } from "material-ui-confirm";
@@ -43,8 +42,12 @@ const DeleteAudio: React.FC<Props> = ({ audioId, getAudios }) => {
   };
 
   return (
-    <Button variant="text" onClick={handleConfirmDelete} disabled={loading}>
-      {loading ? <CircularProgress size={24} /> : <DeleteIcon />}
+    <Button
+      variant="outlined"
+      color="error"
+      onClick={handleConfirmDelete}
+      disabled={loading}>
+      {loading ? <CircularProgress size={24} /> : "Delete Audio"}
     </Button>
   );
 };

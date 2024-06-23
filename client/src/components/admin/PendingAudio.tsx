@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {
+  Alert,
   Box,
   Button,
   Card,
@@ -8,7 +9,6 @@ import {
   CardContent,
   Typography,
 } from "@mui/material";
-import AudioCard from "../common/AudioCard";
 import ApproveContent from "./ApproveContent";
 import ReactPlayer from "react-player";
 import AddToPlaylist from "../common/AddToPlaylist";
@@ -43,22 +43,23 @@ const PendingAudios: React.FC = () => {
 
   return (
     <div style={{ marginLeft: 250, padding: 20 }}>
+      <Typography variant="h5" sx={{ padding: 1 }}>
+        Pending Audios
+      </Typography>
       <Box
         sx={{
           display: "flex",
           flexWrap: "wrap",
           gap: "10px",
-          //   justifyContent: "center",
+
           width: "100%",
-        }}
-      >
+        }}>
         {audios.length > 0 ? (
           audios.map((audio) => (
             <Card
               key={audio.audioId}
               elevation={3}
-              sx={{ width: "22%", borderRadius: 2 }}
-            >
+              sx={{ width: "22%", borderRadius: 2 }}>
               <Box sx={{ height: 140, position: "relative" }}>
                 <img
                   style={{
@@ -81,8 +82,7 @@ const PendingAudios: React.FC = () => {
                       backgroundColor: "rgba(0,0,0,0.6)",
                       color: "white",
                       padding: "8px 16px",
-                    }}
-                  >
+                    }}>
                     Play Audio
                   </Button>
                 )}
@@ -92,8 +92,7 @@ const PendingAudios: React.FC = () => {
                   sx={{
                     display: "flex",
                     justifyContent: "space-between",
-                  }}
-                >
+                  }}>
                   <Typography gutterBottom variant="subtitle1" component="div">
                     {audio.album}
                   </Typography>
@@ -130,7 +129,7 @@ const PendingAudios: React.FC = () => {
             </Card>
           ))
         ) : (
-          <Typography>No pending audios</Typography>
+          <Alert severity="info">No pending audios found.</Alert>
         )}
       </Box>
     </div>

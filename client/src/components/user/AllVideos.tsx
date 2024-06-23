@@ -16,14 +16,14 @@ const AllVideos = () => {
   }, []);
   return (
     <div style={{ marginLeft: 250, padding: 20 }}>
+      <h2>All Videos</h2>
       <Box
         sx={{
           display: "flex",
           flexWrap: "wrap",
           gap: "10px",
           width: "100%",
-        }}
-      >
+        }}>
         <Box
           sx={{
             display: "flex",
@@ -31,8 +31,7 @@ const AllVideos = () => {
             gap: "20px",
             // justifyContent: "center",
             width: "100%",
-          }}
-        >
+          }}>
           {videos.map((video) => (
             <VideoCard video={video} key={video.videoId} />
           ))}

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { UserType } from "../../types";
 import axios from "axios";
 import {
+  Alert,
   Paper,
   Table,
   TableBody,
@@ -36,16 +37,15 @@ const Users = () => {
       style={{
         marginLeft: 250,
         padding: 20,
-      }}
-    >
+      }}>
       {users.length > 0 ? (
         <>
           <div>
             <Typography
+              variant="h5"
               sx={{
                 padding: 1,
-              }}
-            >
+              }}>
               All Users
             </Typography>
           </div>
@@ -63,8 +63,7 @@ const Users = () => {
                 {users.map((user) => (
                   <TableRow
                     key={user.userId}
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                  >
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
                     <TableCell component="th" scope="row">
                       {user.name}
                     </TableCell>
@@ -90,7 +89,7 @@ const Users = () => {
           </TableContainer>
         </>
       ) : (
-        <Typography> User Does not exists</Typography>
+        <Alert severity="info">No users found.</Alert>
       )}
     </div>
   );

@@ -1,13 +1,23 @@
 import { Box, Typography } from "@mui/material";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import AudioCard from "../common/AudioCard";
+import { AudioType } from "../../types";
 
-const AudioPlaylistDetail = () => {
+interface PlaylistAudio {
+  id: number;
+  playlistId: number;
+  audioId: number;
+  createdAt: string;
+  updatedAt: string;
+  audio: AudioType;
+}
+
+const AudioPlaylistDetail: React.FC = () => {
   const { playlistId } = useParams();
 
-  const [audios, setAudios] = useState([]);
+  const [audios, setAudios] = useState<PlaylistAudio[]>([]);
 
   useEffect(() => {
     const GetPlaylists = async () => {
@@ -16,7 +26,7 @@ const AudioPlaylistDetail = () => {
           `/api/get-playlist-audios/${playlistId}`,
           {
             withCredentials: true,
-          }
+          },
         );
         if (response.status === 200) {
           setAudios(response.data);
@@ -34,12 +44,12 @@ const AudioPlaylistDetail = () => {
           display: "flex",
           flexWrap: "wrap",
           gap: "10px",
-          //   justifyContent: "center",
           width: "100%",
-        }}
-      >
+        }}>
         {audios.length > 0 ? (
-          audios.map((audio) => <AudioCard audio={audio.audio} />)
+          audios.map((audio) => (
+            <AudioCard audio={audio.audio} key={audio.audio.audioId} />
+          ))
         ) : (
           <Typography>No Item in Playlist</Typography>
         )}

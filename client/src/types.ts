@@ -18,13 +18,14 @@ interface AudioType {
   createdAt: string;
 }
 interface VideoType {
+  createdAt: string;
   videoId: number;
-  category: string;
   title: string;
-  createdBy: string;
   thumbnail: string;
   videoUrl: string;
-  createdAt: string;
+  CreatedBy: string;
+  Category: { categoryName: string; categoryId: number };
+  user: { name: string };
 }
 
 export type { UserType, AudioType, VideoType };
