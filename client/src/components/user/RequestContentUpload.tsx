@@ -31,7 +31,6 @@ const RequestContentUpload: React.FC = () => {
 
   const location = useLocation();
   const { pathname } = location;
-  console.log(pathname);
 
   return (
     <Container
@@ -40,14 +39,17 @@ const RequestContentUpload: React.FC = () => {
         minHeight: "100lvh",
         display: "flex",
         alignItems: "center",
-      }}>
+        justifyContent: "center",
+      }}
+    >
       <Paper elevation={3} sx={{ p: 4, borderRadius: 2, width: "100%" }}>
         <Typography
           variant="h4"
           gutterBottom
           fontWeight="bold"
           color="primary"
-          textAlign="center">
+          textAlign="center"
+        >
           {pathname === "/admin/upload"
             ? "Upload New Content"
             : "Request Content Upload"}
@@ -56,7 +58,8 @@ const RequestContentUpload: React.FC = () => {
           variant="body1"
           paragraph
           color="text.secondary"
-          textAlign="center">
+          textAlign="center"
+        >
           {pathname === "/admin/upload"
             ? "Share your music, podcasts, or audio stories"
             : "Request to share your music, podcasts, or audio stories"}
@@ -67,7 +70,8 @@ const RequestContentUpload: React.FC = () => {
             flexDirection: isMobile ? "column" : "row",
             gap: 3,
             mt: 4,
-          }}>
+          }}
+        >
           <ButtonWithDialog
             title="Upload New Audio"
             caption="Share your music, podcasts, or audio stories"
@@ -121,7 +125,8 @@ const ButtonWithDialog: React.FC<ButtonWithDialogProps> = ({
           flexDirection: "column",
           alignItems: "flex-start",
           textAlign: "left",
-        }}>
+        }}
+      >
         <Typography variant="h6" fontWeight="bold" gutterBottom>
           {title}
         </Typography>
@@ -140,7 +145,8 @@ const ButtonWithDialog: React.FC<ButtonWithDialogProps> = ({
               right: 8,
               top: 8,
               color: (theme) => theme.palette.grey[500],
-            }}>
+            }}
+          >
             <CloseIcon />
           </IconButton>
         </DialogTitle>

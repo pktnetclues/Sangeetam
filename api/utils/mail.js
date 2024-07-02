@@ -57,6 +57,7 @@ const passChangeMailToUser = ({ name, email }) => {
     },
   };
 };
+
 const forgetPassMailContent = ({ name, forgetPassLink }) => {
   return {
     body: {
@@ -189,7 +190,95 @@ const accountDeletedEmailToUser = ({ name, email }) => {
   };
 };
 
+const accountDeactivatedEmailToUser = ({ name, email }) => {
+  return {
+    body: {
+      name: name,
+      intro: "Notice! Your account has been De-Activated.",
+      action: [
+        {
+          instructions: `Hello ${name}, sorry to inform you that your account with email: ${email} has been deactivated by admin`,
+          button: {
+            color: "#22BC66",
+            text: "Go to Website",
+            link: "http://localhost:5173",
+            fallback: true,
+          },
+        },
+      ],
+      outro:
+        "Need help or have questions? Just reply to this email, and we'd be happy to assist you.",
+    },
+  };
+};
+const accountActivatedEmailToUser = ({ name, email }) => {
+  return {
+    body: {
+      name: name,
+      intro: "Notice! Your account has been Activated.",
+      action: [
+        {
+          instructions: `Hello ${name}, happy to inform you that your account with email: ${email} has been activated by admin`,
+          button: {
+            color: "#22BC66",
+            text: "Go to Website",
+            link: "http://localhost:5173",
+            fallback: true,
+          },
+        },
+      ],
+      outro:
+        "Need help or have questions? Just reply to this email, and we'd be happy to assist you.",
+    },
+  };
+};
+
+const contentUploadEmailToAdmin = ({ name, email, contentType }) => {
+  return {
+    body: {
+      name: "Admin",
+      intro: `New ${contentType} upload request`,
+      action: [
+        {
+          instructions: `Hello admin, you have got an ${contentType} upload request from Name: ${name} and Email: ${email} `,
+          button: {
+            color: "#22BC66",
+            text: "Go to dashboard",
+            link: `http://localhost:5173/admin/pending-${contentType}s`,
+            fallback: true,
+          },
+        },
+      ],
+      outro:
+        "Need help or have questions? Just reply to this email, and we'd be happy to assist you.",
+    },
+  };
+};
+
 const accountApprovedEmailToUser = ({ name }) => {
+  return {
+    body: {
+      name: name,
+      intro: "Congratulations! Your account has been approved.",
+      action: [
+        {
+          instructions:
+            "You can now log in to your account using the link below:",
+          button: {
+            color: "#22BC66",
+            text: "Log In to Your Account",
+            link: "http://localhost:5173/login",
+            fallback: true,
+          },
+        },
+      ],
+      outro:
+        "Need help or have questions? Just reply to this email, and we'd be happy to assist you.",
+    },
+  };
+};
+
+const contentAccepted = ({ name }) => {
   return {
     body: {
       name: name,
@@ -221,4 +310,7 @@ export {
   accountApprovedEmailToUser,
   accountRejectedEmailToUser,
   accountDeletedEmailToUser,
+  accountDeactivatedEmailToUser,
+  accountActivatedEmailToUser,
+  contentUploadEmailToAdmin,
 };

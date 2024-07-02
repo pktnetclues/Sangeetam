@@ -36,13 +36,9 @@ const validationSchema = yup.object().shape({
 
 interface UploadVideoProps {
   closeDialog: () => void;
-  callVideos?: () => void;
 }
 
-const UploadVideo: React.FC<UploadVideoProps> = ({
-  closeDialog,
-  callVideos,
-}) => {
+const UploadVideo: React.FC<UploadVideoProps> = ({ closeDialog }) => {
   const [mediaFile, setMediaFile] = useState<FileList | null>(null);
   const [thumbnailFile, setThumbnailFile] = useState<FileList | null>(null);
   const [loading, setLoading] = useState(false);
@@ -98,7 +94,7 @@ const UploadVideo: React.FC<UploadVideoProps> = ({
         reset();
         toast.success("Video Uploaded");
         closeDialog();
-        callVideos();
+        // callVideos();
       }
     } catch (error) {
       setLoading(false);

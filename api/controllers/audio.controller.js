@@ -2,6 +2,7 @@ import AudioModel from "../models/audio/audio.model.js";
 import VideoModel from "../models/video/video.model.js";
 import { audioSchema } from "../schema/user.schema.js";
 import Yup from "yup";
+import { contentUploadEmailToAdmin, sendEmail } from "../utils/mail.js";
 
 const uploadAudio = async (req, res) => {
   try {
@@ -10,7 +11,7 @@ const uploadAudio = async (req, res) => {
     const { album, singerName, writerName } = req.body;
 
     const uploadedBy = req.user.userId;
-    const isAdmin = req.user.isAdmin;
+    const { isAdmin, name, email } = req.user;
 
     if (req.fileValidationError) {
       return res.status(400).json({
@@ -38,6 +39,17 @@ const uploadAudio = async (req, res) => {
         audioUrl,
         thumbnail,
       });
+
+      await sendEmail({
+        email: process.env.GMAIL_ID,
+        subject: "Content Upload Request",
+        mailgenContent: contentUploadEmailToAdmin({
+          name: name,
+          email: email,
+          contentType: "audio",
+        }),
+      });
+
       return res.status(200).json({ message: "success" });
     } else {
       await AudioModel.create({
@@ -77,9 +89,6 @@ const getPendingAudios = async (req, res) => {
       attributes: {
         exclude: ["isDeleted"],
       },
-      // include: [
-
-      // ]
       order: [["createdAt", "DESC"]],
     });
 

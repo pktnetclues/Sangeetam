@@ -15,28 +15,22 @@ configDotenv();
 
 const app = express();
 
-app.get("/api/health", (req, res) => {
-  res.json({ message: "I am good" });
-});
-
 app.use(
   cors({
     origin: "http://localhost:5173",
     credentials: true,
-  }),
+  })
 );
+
+app.set("trust proxy", true);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Get the directory name of the current module file
-// const __filename = ;
-const __dirname = dirname(fileURLToPath(import.meta.url));
-
 // Serve static assets from the '/public/assets' directory
+const __dirname = dirname(fileURLToPath(import.meta.url));
 app.use("/assets", express.static(join(__dirname, "public", "assets")));
 
-console.log(__dirname + "/public/assets");
 app.use(cookieParser());
 app.use(
   "/api",
@@ -44,8 +38,16 @@ app.use(
   audioRoutes,
   videoRoutes,
   audioPlaylistRoutes,
-  videoPlaylistRoutes,
+  videoPlaylistRoutes
 );
+import IP from "ip";
+import Geo from "geoip-lite";
+app.get("/", (req, res) => {
+  const ipAddress = IP.address("public", "ipv6");
+  const geo = Geo.lookup(ipAddress);
+  console.log(geo);
+  res.send(geo);
+});
 
 sequelize;
 

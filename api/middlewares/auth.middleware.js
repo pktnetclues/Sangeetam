@@ -20,29 +20,31 @@ const authMiddleware = async (req, res, next) => {
 
     // Check if the user exists
     const user = await User.findOne({
-      attributes: ["userId"],
+      // attributes: ["userId"],
       where: { userId: decoded.userId },
     });
+
     if (!user) {
       return res.status(401).json({ message: "User not found" });
     }
 
     // Check if the user is still active
-    if (decoded.isDeleted === true) {
-      return res.status(401).json({ message: "User is deleted" });
+    if (user.isDeleted === true) {
+      return res.status(401).json({ message: "User is deleted by admin" });
     }
 
     // Check if the user is approved
-    if (decoded.isApproved === false) {
+    if (user.isApproved === false) {
       return res.status(401).json({ message: "User is not approved" });
     }
 
     // Check if the user is inactive
-    if (decoded.status === false) {
-      return res.status(401).json({ message: "User is inactive" });
+    if (user.status === false) {
+      return res
+        .status(401)
+        .json({ message: "User has been made inactive by admin" });
     }
 
-    // If the token is valid, set the user id in the request object
     req.user = decoded;
     next();
   });

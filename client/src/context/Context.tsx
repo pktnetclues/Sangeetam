@@ -6,6 +6,7 @@ import {
   useContext,
 } from "react";
 import axios from "axios";
+import { toast } from "sonner";
 
 interface User {
   userId: string;
@@ -57,8 +58,13 @@ export const ContextProvider: React.FC<ContextProviderProps> = ({
         setUser(response.data);
       }
     } catch (error: any) {
+      if (error.response.status === 401) {
+        await axios.get("/api/logout", {
+          withCredentials: true,
+        });
+        toast.error(error.response.data.message);
+      }
       setLoading(false);
-      console.error("Error fetching profile:", error.message);
     }
   };
 

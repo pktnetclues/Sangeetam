@@ -51,7 +51,7 @@ const AudioCard: React.FC<AudioCardProps> = ({ audio }) => {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       sx={{
-        width: isHovered ? "280px" : "260px",
+        width: isHovered ? "245px" : "240px",
         borderRadius: 2,
         overflow: "hidden",
         boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
@@ -60,7 +60,8 @@ const AudioCard: React.FC<AudioCardProps> = ({ audio }) => {
           boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
           transform: "scale(1.02)",
         },
-      }}>
+      }}
+    >
       <Box sx={{ height: 140, position: "relative" }}>
         <Slide direction="up" in mountOnEnter unmountOnExit timeout={400}>
           <img
@@ -85,7 +86,8 @@ const AudioCard: React.FC<AudioCardProps> = ({ audio }) => {
             padding: "8px",
             borderRadius: "50%",
             transition: "all 0.3s ease-in-out",
-          }}>
+          }}
+        >
           {playAudio ? (
             <PauseCircleOutline fontSize="large" />
           ) : (

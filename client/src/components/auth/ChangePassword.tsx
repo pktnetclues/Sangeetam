@@ -24,7 +24,17 @@ const errMess = {
 };
 
 const validationSchema = yup.object().shape({
-  newPassword: yup.string().min(6).required(errMess.message),
+  newPassword: yup
+    .string()
+    .min(6)
+    .required(errMess.message)
+    .matches(RegExp("(.*[a-z].*)"), "At least one lowercase")
+    .matches(RegExp("(.*[A-Z].*)"), "At lest one Uppercase")
+    .matches(RegExp("(.*\\d.*)"), "At least one Number")
+    .matches(
+      RegExp('[!@#$%^&*(),.?":{}|<>]'),
+      "One special character is required"
+    ),
   confirmNewPassword: yup
     .string()
     .oneOf([yup.ref("newPassword")], "Passwords must match")

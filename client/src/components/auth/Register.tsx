@@ -17,7 +17,7 @@ import {
 import { toast } from "sonner";
 import axios, { AxiosError } from "axios";
 import * as yup from "yup";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 interface IFormInput {
   name: string;

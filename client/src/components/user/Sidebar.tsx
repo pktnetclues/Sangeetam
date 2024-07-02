@@ -83,7 +83,8 @@ const Sidebar = () => {
           edge="start"
           color="inherit"
           aria-label="menu"
-          onClick={handleClick}>
+          onClick={handleClick}
+        >
           <MenuIcon />
         </IconButton>
         <Menu
@@ -97,11 +98,13 @@ const Sidebar = () => {
           transformOrigin={{
             vertical: "top",
             horizontal: "left",
-          }}>
+          }}
+        >
           {menuItems.map((item) => (
             <MenuItem
               key={item.label}
-              onClick={item.onClick || (() => handleNavigation(item.path))}>
+              onClick={item.onClick || (() => handleNavigation(item.path))}
+            >
               <ListItemIcon>{item.icon}</ListItemIcon>
               <ListItemText primary={item.label} />
             </MenuItem>
@@ -125,7 +128,8 @@ const Sidebar = () => {
           padding: "10px",
           overflow: "auto",
         },
-      }}>
+      }}
+    >
       <Box sx={{ padding: "20px" }}>
         <Typography variant="h6" sx={{ textAlign: "center", padding: "10px" }}>
           <IconButton sx={{ marginRight: "10px" }}>
@@ -156,7 +160,8 @@ const Sidebar = () => {
                       backgroundColor: theme.palette.background.default,
                       borderLeft: "2px solid " + theme.palette.primary.main,
                     },
-                  }}>
+                  }}
+                >
                   <ListItemIcon sx={{ minWidth: 40 }}>{item.icon}</ListItemIcon>
                   <ListItemText primary={item.label} sx={{ fontSize: 16 }} />
                 </ListItemButton>

@@ -9,7 +9,9 @@ import {
   updatePassSchema,
 } from "../schema/user.schema.js";
 import {
+  accountActivatedEmailToUser,
   accountApprovedEmailToUser,
+  accountDeactivatedEmailToUser,
   accountDeletedEmailToUser,
   accountRejectedEmailToUser,
   forgetPassMailContent,
@@ -155,7 +157,7 @@ const login = async (req, res) => {
         .json({ message: "User is deleted by admin contact admin" });
     }
 
-    if (existingUser.status === "inactive") {
+    if (existingUser.status === false) {
       return res
         .status(400)
         .json({ message: "User is in-active contact admin" });
@@ -416,16 +418,35 @@ const changeUserStatus = async (req, res) => {
     }
     const { email } = req.body;
 
-    const existingStatus = await User.findOne({
-      attributes: ["status"],
+    const existingUser = await User.findOne({
+      attributes: ["status", "email", "name"],
       where: { email },
     });
 
-    if (existingStatus.status) {
+    console.log(existingUser);
+
+    if (existingUser.status) {
       await User.update({ status: false }, { where: { email } });
+
+      await sendEmail({
+        email: existingUser.email,
+        subject: "Notice Regarding Account",
+        mailgenContent: accountDeactivatedEmailToUser({
+          name: existingUser.name,
+          email: existingUser.email,
+        }),
+      });
       return res.status(200).json({ message: "User is de-activated" });
     } else {
       await User.update({ status: true }, { where: { email } });
+      await sendEmail({
+        email: existingUser.email,
+        subject: "Notice Regarding Account",
+        mailgenContent: accountActivatedEmailToUser({
+          name: existingUser.name,
+          email: existingUser.email,
+        }),
+      });
       return res.status(200).json({ message: "User is activated" });
     }
   } catch (error) {
@@ -462,7 +483,9 @@ const deleteUser = async (req, res) => {
       });
       return res.status(200).json({ message: "User Deleted Successfully" });
     }
-  } catch (error) {}
+  } catch (error) {
+    return res.status(500).json({ message: "Internal server error" });
+  }
 };
 
 const logout = async (req, res) => {

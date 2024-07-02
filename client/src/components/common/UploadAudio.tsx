@@ -1,7 +1,13 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { TextField, Button, Container, Typography } from "@mui/material";
+import {
+  TextField,
+  Button,
+  Container,
+  Typography,
+  CircularProgress,
+} from "@mui/material";
 import { toast } from "sonner";
 import axios from "axios";
 import * as yup from "yup";
@@ -30,13 +36,9 @@ const validationSchema = yup.object().shape({
 
 interface UploadAudioProps {
   closeDialog: () => void;
-  callAudios?: () => void;
 }
 
-const UploadAudio: React.FC<UploadAudioProps> = ({
-  closeDialog,
-  callAudios,
-}) => {
+const UploadAudio: React.FC<UploadAudioProps> = ({ closeDialog }) => {
   const [mediaFile, setMediaFile] = useState<FileList | null>(null);
   const [thumbnailFile, setThumbnailFile] = useState<FileList | null>(null);
   const [loading, setLoading] = useState(false);
@@ -75,7 +77,6 @@ const UploadAudio: React.FC<UploadAudioProps> = ({
         reset();
         toast.success("Audio Uploaded");
         closeDialog();
-        callAudios();
       }
     } catch (error) {
       setLoading(false);
@@ -193,7 +194,13 @@ const UploadAudio: React.FC<UploadAudioProps> = ({
             Upload
           </Button>
         ) : (
-          <Button variant="contained" color="primary" disabled fullWidth>
+          <Button
+            variant="contained"
+            color="primary"
+            disabled
+            fullWidth
+            startIcon={<CircularProgress size={20} />}
+          >
             Uploading...
           </Button>
         )}
